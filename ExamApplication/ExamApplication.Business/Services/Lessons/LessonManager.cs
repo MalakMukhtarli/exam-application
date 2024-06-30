@@ -25,14 +25,17 @@ public class LessonManager : ILessonService
         _lessonGradeTeacherRepository = lessonGradeTeacherRepository;
     }
 
-    public async Task<List<LessonDto>> GetAll()
+    public async Task<List<LessonDto>> GetAllAsync()
     {
         var lessons = await _lessonRepository.GetQuery().Where(x => x.Active)
             .Include(x => x.LessonGradeTeachers.Where(y => !y.Deleted))
-            .ThenInclude(x => x.Grade)
+                .ThenInclude(x => x.Grade)
             .Select(x => new LessonDto
             {
-                Id = x.Id, Code = x.Code, Name = x.Name, Grades = x.LessonGradeTeachers.Select(x => x.Grade.Value).ToList()
+                Id = x.Id, 
+                Code = x.Code, 
+                Name = x.Name, 
+                Grades = x.LessonGradeTeachers.Select(x => x.Grade.Value).ToList()
             })
             .ToListAsync();
 

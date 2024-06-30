@@ -13,6 +13,6 @@ public class SaveLessonRequestValidator : BaseValidator<SaveLessonRequest>
             .NotEmpty().WithMessage("Dərsin adı boş ola bilməz")
             .Length(0, 30).WithMessage("Dərsin adı ən çox 30 simvol ola bilər");
         RuleFor(e => e.GradeIds)
-            .NotNull().WithMessage("Dərs üçün sinif seçilməlidir");
+            .NotNull().WithMessage("Dərs üçün ən az 1 sinif seçilməlidir");
     }
 }

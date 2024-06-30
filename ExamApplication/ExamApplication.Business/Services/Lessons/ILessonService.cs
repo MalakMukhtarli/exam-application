@@ -5,7 +5,7 @@ namespace ExamApplication.Business.Services.Lessons;
 
 public interface ILessonService
 {
-    Task<List<LessonDto>> GetAll();
+    Task<List<LessonDto>> GetAllAsync();
     Task<int> Create(SaveLessonRequest request);
     Task CheckById(int lessonId);
     Task<LessonGradeTeacher> CheckByGradeId(int lessonId, int gradeId);
