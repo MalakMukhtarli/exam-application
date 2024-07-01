@@ -1,0 +1,44 @@
+@model System.Collections.Generic.List<ExamApplication.Business.Models.Teachers.TeacherDto>
+
+@{
+    ViewBag.Title = "Müəllimlər";
+    Layout = "_Layout";
+    int i = 0;
+}
+
+<div class="container-fluid px-5 py-5">
+
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+            <tr class="table-primary">
+                <th scope="col">#</th>
+                <th scope="col">Müəllimin adı soyadı</th>
+                <th scope="col">Müəllimin keçdiyi dərslər</th>
+                <th scope="col">Müəllimin dərs keçdiyi siniflər</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var teacher in Model)
+            {
+                <tr>
+                    <th scope="row">@(++i)</th>
+                    <td class="align-items-center"><div>@teacher.Name @teacher.Surname</div></td>
+                    <td>
+                        @foreach (var lessonGrade in teacher.LessonGrades)
+                        {
+                            <div>@lessonGrade.Lesson</div>
+                        }
+                    </td>
+                    <td>
+                        @foreach (var lessonGrade in teacher.LessonGrades)
+                        {
+                            <div>@lessonGrade.Grade</div>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

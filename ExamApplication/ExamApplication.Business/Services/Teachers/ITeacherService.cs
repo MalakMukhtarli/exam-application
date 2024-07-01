@@ -4,10 +4,10 @@ namespace ExamApplication.Business.Services.Teachers;
 
 public interface ITeacherService
 {
-    Task<List<TeacherDto>> GetAll();
-    Task<int> Create(SaveTeacherRequest request);
-    Task CreateLessonGradeTeacher(int teacherId, List<SaveLessonGradeTeacherRequest> requests);
-    Task<TeacherDto> GetById(int teacherId);
-    Task<int> Update(int teacherId, List<UpdateTeacherRequest> requests);
-    Task Delete(int teacherId);
+    Task<List<TeacherDto>> GetAllAsync();
+    Task<int> CreateAsync(SaveTeacherRequest request);
+    Task CreateLessonGradeTeacherAsync(int teacherId, List<SaveLessonGradeTeacherRequest> requests);
+    Task<TeacherDto> GetByIdAsync(int teacherId);
+    Task<int> UpdateAsync(int teacherId, List<UpdateTeacherRequest> requests);
+    Task DeleteAsync(int teacherId);
 }

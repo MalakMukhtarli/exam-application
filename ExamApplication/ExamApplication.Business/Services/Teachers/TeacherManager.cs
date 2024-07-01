@@ -26,7 +26,7 @@ public class TeacherManager : ITeacherService
         _lessonGradeTeacherRepository = lessonGradeTeacherRepository;
     }
 
-    public async Task<List<TeacherDto>> GetAll()
+    public async Task<List<TeacherDto>> GetAllAsync()
     {
         var teachers = await _teacherRepository.GetQuery().Where(x => x.Active)
             .Include(x => x.LessonGradeTeachers.Where(y => !y.Deleted))
@@ -37,7 +37,10 @@ public class TeacherManager : ITeacherService
             .ThenInclude(x => x.Lesson)
             .Select(x => new TeacherDto
             {
-                Id = x.Id, Name = x.Name, Surname = x.Surname, LessonGrades = x.LessonGradeTeachers
+                Id = x.Id, 
+                Name = x.Name, 
+                Surname = x.Surname, 
+                LessonGrades = x.LessonGradeTeachers
                     .Select(y => new LessonGradeDto
                         { 
                             Id = y.Id, 
@@ -50,7 +53,7 @@ public class TeacherManager : ITeacherService
         return teachers;
     }
 
-    public async Task<int> Create(SaveTeacherRequest request)
+    public async Task<int> CreateAsync(SaveTeacherRequest request)
     {
         if (request is null)
             throw new BadHttpRequestException("Məlumatlar doldurulmayıb");
@@ -66,7 +69,7 @@ public class TeacherManager : ITeacherService
         return newTeacher.Id;
     }
 
-    public async Task CreateLessonGradeTeacher(int teacherId, List<SaveLessonGradeTeacherRequest> requests)
+    public async Task CreateLessonGradeTeacherAsync(int teacherId, List<SaveLessonGradeTeacherRequest> requests)
     {
         if (requests is null)
             throw new BadHttpRequestException("Məlumatlar doldurulmayıb");
@@ -102,7 +105,7 @@ public class TeacherManager : ITeacherService
         await _lessonGradeTeacherRepository.AddRangeAsync(lessonGradeTeachers);
     }
 
-    public async Task<TeacherDto> GetById(int teacherId)
+    public async Task<TeacherDto> GetByIdAsync(int teacherId)
     {
         var teacher = await _teacherRepository.GetQuery().Where(x => x.Active && x.Id == teacherId)
             .Include(x => x.LessonGradeTeachers)
@@ -132,7 +135,7 @@ public class TeacherManager : ITeacherService
         return teacher;
     }
 
-    public async Task<int> Update(int teacherId, List<UpdateTeacherRequest> requests)
+    public async Task<int> UpdateAsync(int teacherId, List<UpdateTeacherRequest> requests)
     {
         var teacher = await _teacherRepository.GetQuery().Where(x => x.Active && x.Id == teacherId)
             .Include(x => x.LessonGradeTeachers)
@@ -193,7 +196,7 @@ public class TeacherManager : ITeacherService
         return teacherId;
     }
 
-    public async Task Delete(int teacherId)
+    public async Task DeleteAsync(int teacherId)
     {
         var teacher = await _teacherRepository.GetQuery().Where(x => x.Active && x.Id == teacherId)
             .Include(x => x.LessonGradeTeachers)

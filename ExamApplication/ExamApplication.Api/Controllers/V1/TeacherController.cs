@@ -12,7 +12,7 @@ public class TeacherController : ControllerBase
     [HttpGet(ApiRoutes.Teacher.GetAll)]
     public async Task<IActionResult> GetAll([FromServices] ITeacherService service)
     {
-        var data = await service.GetAll();
+        var data = await service.GetAllAsync();
         return Ok(data);
     }
 
@@ -20,7 +20,7 @@ public class TeacherController : ControllerBase
     public async Task<IActionResult> Create([FromBody] SaveTeacherRequest request,
         [FromServices] ITeacherService service)
     {
-        var data = await service.Create(request);
+        var data = await service.CreateAsync(request);
         return Ok(data);
     }
 
@@ -28,14 +28,14 @@ public class TeacherController : ControllerBase
     public async Task<IActionResult> CreateLessonGradeTeacher([FromRoute] int teacherId,
         [FromBody] List<SaveLessonGradeTeacherRequest> requests, [FromServices] ITeacherService service)
     {
-        await service.CreateLessonGradeTeacher(teacherId, requests);
+        await service.CreateLessonGradeTeacherAsync(teacherId, requests);
         return Ok();
     }
 
     [HttpGet(ApiRoutes.Teacher.Get)]
     public async Task<IActionResult> Get([FromRoute] int teacherId, [FromServices] ITeacherService service)
     {
-        var data = await service.GetById(teacherId);
+        var data = await service.GetByIdAsync(teacherId);
         return Ok(data);
     }
 
@@ -43,14 +43,14 @@ public class TeacherController : ControllerBase
     public async Task<IActionResult> Update([FromRoute] int teacherId, [FromBody] List<UpdateTeacherRequest> requests,
         [FromServices] ITeacherService service)
     {
-        var data = await service.Update(teacherId, requests);
+        var data = await service.UpdateAsync(teacherId, requests);
         return Ok(data);
     }
 
     [HttpDelete(ApiRoutes.Teacher.Delete)]
     public async Task<IActionResult> Delete([FromRoute] int teacherId, [FromServices] ITeacherService service)
     {
-        await service.Delete(teacherId);
+        await service.DeleteAsync(teacherId);
         return Ok();
     }
 }
