@@ -7,7 +7,7 @@ public class Lesson : CommonEntity
 {
     public Lesson()
     {
-        LessonGradeTeachers = new HashSet<LessonGradeTeacher>();
+        LessonGrades = new HashSet<LessonGrade>();
     }
 
     [Required] 
@@ -16,6 +16,5 @@ public class Lesson : CommonEntity
     [Required] 
     [Column(TypeName = "nvarchar(30)")]
     public string Name { get; set; }
-    
-    public virtual ICollection<LessonGradeTeacher> LessonGradeTeachers { get; set; }
+    public virtual ICollection<LessonGrade> LessonGrades { get; set; }
 }

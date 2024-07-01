@@ -64,14 +64,14 @@ public class PupilManager : IPupilService
         };
 
         var grade = await _gradeRepository.GetQuery().Where(x=> x.Id == request.GradeId)
-            .Include(x=>x.LessonGradeTeachers)
+            .Include(x=>x.LessonGrades)
             .ThenInclude(x=>x.Exams)
             .FirstOrDefaultAsync()
             ;
 
         await _pupilRepository.BeginTransaction();
         
-        var exam = grade.LessonGradeTeachers.SelectMany(x => x.Exams);
+        var exam = grade.LessonGrades.SelectMany(x => x.Exams);
         if (exam.Count() > 0)
         {
             var pupilExam = new PupilExam { Pupil = newPupil, ExamId = exam.FirstOrDefault().Id };

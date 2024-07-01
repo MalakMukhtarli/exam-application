@@ -6,10 +6,10 @@ namespace ExamApplication.Business.Services.Lessons;
 public interface ILessonService
 {
     Task<List<LessonDto>> GetAllAsync();
-    Task<int> Create(SaveLessonRequest request);
-    Task CheckById(int lessonId);
-    Task<LessonGradeTeacher> CheckByGradeId(int lessonId, int gradeId);
-    Task<LessonDto> GetById(int lessonId);
-    Task<int> Update(int lessonId, UpdateLessonRequest request);
-    Task Delete(int lessonId);
+    Task<int> CreateAsync(SaveLessonRequest request);
+    Task CheckByIdAsync(int lessonId);
+    Task<LessonGrade> CheckByGradeIdAsync(int lessonId, int gradeId);
+    Task<LessonDto> GetByIdAsync(int lessonId);
+    Task<int> UpdateAsync(int lessonId, UpdateLessonRequest request);
+    Task DeleteAsync(int lessonId);
 }

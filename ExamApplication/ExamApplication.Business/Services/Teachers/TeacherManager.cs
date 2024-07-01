@@ -30,10 +30,10 @@ public class TeacherManager : ITeacherService
     {
         var teachers = await _teacherRepository.GetQuery().Where(x => x.Active)
             .Include(x => x.LessonGradeTeachers.Where(y => !y.Deleted))
-            // .ThenInclude(x => x.LessonGrade)
+            .ThenInclude(x => x.LessonGrade)
             .ThenInclude(x => x.Grade)
             .Include(x => x.LessonGradeTeachers.Where(y => !y.Deleted))
-            // .ThenInclude(x => x.LessonGrade)
+            .ThenInclude(x => x.LessonGrade)
             .ThenInclude(x => x.Lesson)
             .Select(x => new TeacherDto
             {
@@ -41,8 +41,8 @@ public class TeacherManager : ITeacherService
                     .Select(y => new LessonGradeDto
                         { 
                             Id = y.Id, 
-                            // Lesson = y.LessonGrade.Lesson.Name, 
-                            // Grade = y.LessonGrade.Grade.Value 
+                            Lesson = y.LessonGrade.Lesson.Name, 
+                            Grade = y.LessonGrade.Grade.Value 
                         }).ToList()
             })
             .ToListAsync();
@@ -80,10 +80,10 @@ public class TeacherManager : ITeacherService
 
         foreach (var request in requests)
         {
-            await _lessonService.CheckById(request.LessonId);
+            await _lessonService.CheckByIdAsync(request.LessonId);
             await _gradeService.CheckById(request.GradeId);
 
-            var lessonGrade = await _lessonService.CheckByGradeId(request.LessonId, request.GradeId);
+            var lessonGrade = await _lessonService.CheckByGradeIdAsync(request.LessonId, request.GradeId);
 
             var isExistLessonGradeTeacher = await _lessonGradeTeacherRepository.GetQuery()
                 .AnyAsync(x => x.TeacherId == teacherId 
@@ -106,10 +106,10 @@ public class TeacherManager : ITeacherService
     {
         var teacher = await _teacherRepository.GetQuery().Where(x => x.Active && x.Id == teacherId)
             .Include(x => x.LessonGradeTeachers)
-            // .ThenInclude(x => x.LessonGrade)
+            .ThenInclude(x => x.LessonGrade)
             .ThenInclude(x => x.Grade)
             .Include(x => x.LessonGradeTeachers)
-            // .ThenInclude(x => x.LessonGrade)
+            .ThenInclude(x => x.LessonGrade)
             .ThenInclude(x => x.Lesson)
             .Select(x => new TeacherDto
             {
@@ -120,8 +120,8 @@ public class TeacherManager : ITeacherService
                     .Select(y => new LessonGradeDto
                         { 
                             Id = y.Id, 
-                            // Lesson = y.LessonGrade.Lesson.Name, 
-                            // Grade = y.LessonGrade.Grade.Value
+                            Lesson = y.LessonGrade.Lesson.Name, 
+                            Grade = y.LessonGrade.Grade.Value
                         }).ToList()
             })
             .FirstOrDefaultAsync();
@@ -136,10 +136,10 @@ public class TeacherManager : ITeacherService
     {
         var teacher = await _teacherRepository.GetQuery().Where(x => x.Active && x.Id == teacherId)
             .Include(x => x.LessonGradeTeachers)
-            // .ThenInclude(x => x.LessonGrade)
+            .ThenInclude(x => x.LessonGrade)
             .ThenInclude(x => x.Grade)
             .Include(x => x.LessonGradeTeachers)
-            // .ThenInclude(x => x.LessonGrade)
+            .ThenInclude(x => x.LessonGrade)
             .ThenInclude(x => x.Lesson)
             .FirstOrDefaultAsync();
 
@@ -151,14 +151,14 @@ public class TeacherManager : ITeacherService
 
         foreach (var request in requests)
         {
-            await _lessonService.CheckById(request.LessonId);
+            await _lessonService.CheckByIdAsync(request.LessonId);
             await _gradeService.CheckById(request.GradeId);
 
-            var lessonGrade = await _lessonService.CheckByGradeId(request.LessonId, request.GradeId);
+            var lessonGrade = await _lessonService.CheckByGradeIdAsync(request.LessonId, request.GradeId);
 
             var lessonGradeTeacher =
                 teacher.LessonGradeTeachers.FirstOrDefault(
-                    // x => x.LessonGradeId == lessonGrade.Id
+                    x => x.LessonGradeId == lessonGrade.Id
                     );
 
             if (lessonGradeTeacher is null)
@@ -166,7 +166,7 @@ public class TeacherManager : ITeacherService
                 newLessonGradeTeachers.Add(new LessonGradeTeacher
                     { 
                         TeacherId = teacherId, 
-                        // LessonGradeId = lessonGrade.Id
+                        LessonGradeId = lessonGrade.Id
                     });
             }
         }
@@ -174,9 +174,9 @@ public class TeacherManager : ITeacherService
         foreach (var lessonGradeTeacher in teacher.LessonGradeTeachers)
         {
             var lessonGradeTeacherCheck = requests.Any(
-                // x =>
-                // x.LessonId == lessonGradeTeacher.LessonGrade.LessonId &&
-                // x.GradeId == lessonGradeTeacher.LessonGrade.GradeId
+                x =>
+                x.LessonId == lessonGradeTeacher.LessonGrade.LessonId &&
+                x.GradeId == lessonGradeTeacher.LessonGrade.GradeId
                 );
 
             if (!lessonGradeTeacherCheck)
@@ -197,10 +197,10 @@ public class TeacherManager : ITeacherService
     {
         var teacher = await _teacherRepository.GetQuery().Where(x => x.Active && x.Id == teacherId)
             .Include(x => x.LessonGradeTeachers)
-            // .ThenInclude(x => x.LessonGrade)
+            .ThenInclude(x => x.LessonGrade)
             .ThenInclude(x => x.Grade)
             .Include(x => x.LessonGradeTeachers)
-            // .ThenInclude(x => x.LessonGrade)
+            .ThenInclude(x => x.LessonGrade)
             .ThenInclude(x => x.Lesson)
             .FirstOrDefaultAsync();
 

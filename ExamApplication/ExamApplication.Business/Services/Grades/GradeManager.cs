@@ -18,7 +18,7 @@ public class GradeManager : IGradeService
     public async Task<List<GradeDto>> GetAll()
     {
         var grades = await _gradeRepository.GetQuery().Where(x => x.Active)
-            .Include(x => x.LessonGradeTeachers.Where(y=> !y.Deleted))
+            .Include(x => x.LessonGrades.Where(y=> !y.Deleted))
             .ThenInclude(x => x.Grade)
             .Select(x => new GradeDto{ Id = x.Id, Value = x.Value})
             .ToListAsync();
@@ -78,13 +78,13 @@ public class GradeManager : IGradeService
     {
         var grade = await _gradeRepository.GetQuery().Where(x => x.Active && x.Id == gradeId)
             .Include(x=>x.PupilGrades)
-            .Include(x=>x.LessonGradeTeachers)
+            .Include(x=>x.LessonGrades)
             .FirstOrDefaultAsync();
 
         if (grade is null)
             throw new NotFoundException("Belə bir sinif tapılmadı");
 
-        if (grade.PupilGrades.Count > 0 || grade.LessonGradeTeachers.Count > 0)
+        if (grade.PupilGrades.Count > 0 || grade.LessonGrades.Count > 0)
             throw new NotFoundException("Sinifə bağlı şagird və ya dərs olduğu üçün silinə bilməz");
 
         await _gradeRepository.DeleteAsync(grade);

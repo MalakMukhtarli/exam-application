@@ -8,9 +8,8 @@ public class Exam : CommonEntity
     }
     
     public DateTime ExamDate { get; set; }
-    
-    public int LessonGradeTeacherId { get; set; }
-    public virtual LessonGradeTeacher LessonGradeTeacher { get; set; }
+    public int LessonGradeId { get; set; }
+    public virtual LessonGrade LessonGrade { get; set; }
     
     public virtual ICollection<PupilExam> PupilExams { get; set; }
 }

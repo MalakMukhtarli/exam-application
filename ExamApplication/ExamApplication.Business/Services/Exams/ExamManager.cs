@@ -32,15 +32,15 @@ public class ExamManager : IExamService
     public async Task<List<ExamDto>> GetAll()
     {
         var exams = await _examRepository.GetQuery().Where(x => x.Active)
-            .Include(x => x.LessonGradeTeacher)
+            .Include(x => x.LessonGrade)
             .ThenInclude(x => x.Grade)
-            .Include(x => x.LessonGradeTeacher)
+            .Include(x => x.LessonGrade)
             .ThenInclude(x => x.Lesson)
             .Include(x => x.PupilExams)
             .ThenInclude(x => x.Pupil)
             .Select(x => new ExamDto
             {
-                Id = x.Id, ExamDate = x.ExamDate, LessonCode = x.LessonGradeTeacher.Lesson.Code, PupilExams = x.PupilExams
+                Id = x.Id, ExamDate = x.ExamDate, LessonCode = x.LessonGrade.Lesson.Code, PupilExams = x.PupilExams
                     .Select(y => new PupilExamDto { Id = y.Id, PupilNumber = y.Pupil.Number, Mark = y.Mark }).ToList()
             })
             .ToListAsync();
@@ -53,17 +53,17 @@ public class ExamManager : IExamService
         if (request is null)
             throw new BadHttpRequestException("Məlumatlar doldurulmayıb");
 
-        await _lessonService.CheckById(request.LessonId);
+        await _lessonService.CheckByIdAsync(request.LessonId);
         await _gradeService.CheckById(request.GradeId);
 
-        var lessonGrade = await _lessonService.CheckByGradeId(request.LessonId, request.GradeId);
+        var lessonGrade = await _lessonService.CheckByGradeIdAsync(request.LessonId, request.GradeId);
 
         var pupilGrades = await _pupilService.GetByGradeId(request.GradeId);
 
         var exam = new Exam
         {
             ExamDate = request.ExamDate,
-            LessonGradeTeacherId = lessonGrade.Id,
+            LessonGradeId = lessonGrade.Id,
             PupilExams = pupilGrades.Select(x => new PupilExam { PupilId = x.PupilId }).ToList()
         };
 
@@ -75,9 +75,9 @@ public class ExamManager : IExamService
     public async Task<ExamDto> GetById(int examId)
     {
         var exam = await _examRepository.GetQuery().Where(x => x.Active && x.Id == examId)
-            .Include(x => x.LessonGradeTeacher)
+            .Include(x => x.LessonGrade)
             .ThenInclude(x => x.Grade)
-            .Include(x => x.LessonGradeTeacher)
+            .Include(x => x.LessonGrade)
             .ThenInclude(x => x.Lesson)
             .Include(x => x.PupilExams)
             .ThenInclude(x => x.Pupil)
@@ -85,7 +85,7 @@ public class ExamManager : IExamService
             {
                 Id = x.Id,
                 ExamDate = x.ExamDate,
-                LessonCode = x.LessonGradeTeacher.Lesson.Code,
+                LessonCode = x.LessonGrade.Lesson.Code,
                 PupilExams = x.PupilExams
                     .Select(y => new PupilExamDto { Id = y.Id, PupilNumber = y.Pupil.Number, Mark = y.Mark }).ToList()
             })

@@ -45,7 +45,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Exam>().HasQueryFilter(x => !x.Deleted);
         modelBuilder.Entity<Grade>().HasQueryFilter(x => !x.Deleted);
         modelBuilder.Entity<Lesson>().HasQueryFilter(x => !x.Deleted);
-        // modelBuilder.Entity<LessonGrade>().HasQueryFilter(x => !x.Deleted);
+        modelBuilder.Entity<LessonGrade>().HasQueryFilter(x => !x.Deleted);
         modelBuilder.Entity<LessonGradeTeacher>().HasQueryFilter(x => !x.Deleted);
         modelBuilder.Entity<Pupil>().HasQueryFilter(x => !x.Deleted);
         modelBuilder.Entity<PupilExam>().HasQueryFilter(x => !x.Deleted);

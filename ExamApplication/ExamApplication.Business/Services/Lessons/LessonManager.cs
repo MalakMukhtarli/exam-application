@@ -11,38 +11,38 @@ namespace ExamApplication.Business.Services.Lessons;
 public class LessonManager : ILessonService
 {
     private readonly ILessonRepository _lessonRepository;
-    // private readonly IRepositoryAsync<LessonGradeTeacher> _lessonGradeRepository;
+    private readonly IRepositoryAsync<LessonGrade> _lessonGradeRepository;
     private readonly IRepositoryAsync<LessonGradeTeacher> _lessonGradeTeacherRepository;
     private readonly IGradeService _gradeService;
 
     public LessonManager(ILessonRepository lessonRepository, IGradeService gradeService,
-        // IRepositoryAsync<LessonGradeTeacher> lessonGradeRepository,
+        IRepositoryAsync<LessonGrade> lessonGradeRepository,
         IRepositoryAsync<LessonGradeTeacher> lessonGradeTeacherRepository)
     {
         _lessonRepository = lessonRepository;
         _gradeService = gradeService;
-        // _lessonGradeRepository = lessonGradeRepository;
+        _lessonGradeRepository = lessonGradeRepository;
         _lessonGradeTeacherRepository = lessonGradeTeacherRepository;
     }
 
     public async Task<List<LessonDto>> GetAllAsync()
     {
         var lessons = await _lessonRepository.GetQuery().Where(x => x.Active)
-            .Include(x => x.LessonGradeTeachers.Where(y => !y.Deleted))
+            .Include(x => x.LessonGrades.Where(y => !y.Deleted))
                 .ThenInclude(x => x.Grade)
             .Select(x => new LessonDto
             {
                 Id = x.Id, 
                 Code = x.Code, 
                 Name = x.Name, 
-                Grades = x.LessonGradeTeachers.Select(x => x.Grade.Value).ToList()
+                Grades = x.LessonGrades.Select(x => x.Grade.Value).ToList()
             })
             .ToListAsync();
 
         return lessons;
     }
 
-    public async Task<int> Create(SaveLessonRequest request)
+    public async Task<int> CreateAsync(SaveLessonRequest request)
     {
         if (request is null)
             throw new BadHttpRequestException("Məlumatlar doldurulmayıb");
@@ -62,7 +62,7 @@ public class LessonManager : ILessonService
         {
             Code = request.Code,
             Name = request.Name,
-            LessonGradeTeachers = request.GradeIds.Select(x => new LessonGradeTeacher { GradeId = x }).ToList()
+            LessonGrades = request.GradeIds.Select(x => new LessonGrade { GradeId = x }).ToList()
         };
 
         var newLesson = await _lessonRepository.AddAsync(lesson);
@@ -70,7 +70,7 @@ public class LessonManager : ILessonService
         return newLesson.Id;
     }
 
-    public async Task CheckById(int lessonId)
+    public async Task CheckByIdAsync(int lessonId)
     {
         var lesson = await _lessonRepository.GetQuery().AnyAsync(x => x.Active && x.Id == lessonId);
 
@@ -78,9 +78,9 @@ public class LessonManager : ILessonService
             throw new NotFoundException("Belə bir dərs tapılmadı");
     }
 
-    public async Task<LessonGradeTeacher> CheckByGradeId(int lessonId, int gradeId)
+    public async Task<LessonGrade> CheckByGradeIdAsync(int lessonId, int gradeId)
     {
-        var lessonGrade = await _lessonGradeTeacherRepository.GetQuery()
+        var lessonGrade = await _lessonGradeRepository.GetQuery()
             .FirstOrDefaultAsync(x => x.LessonId == lessonId && x.GradeId == gradeId);
 
         if (lessonGrade is null)
@@ -89,14 +89,14 @@ public class LessonManager : ILessonService
         return lessonGrade;
     }
 
-    public async Task<LessonDto> GetById(int lessonId)
+    public async Task<LessonDto> GetByIdAsync(int lessonId)
     {
         var lesson = await _lessonRepository.GetQuery().Where(x => x.Active && x.Id == lessonId)
-            .Include(x => x.LessonGradeTeachers)
+            .Include(x => x.LessonGrades)
             .ThenInclude(x => x.Grade)
             .Select(x => new LessonDto
             {
-                Id = x.Id, Code = x.Code, Name = x.Name, Grades = x.LessonGradeTeachers.Select(x => x.Grade.Value).ToList()
+                Id = x.Id, Code = x.Code, Name = x.Name, Grades = x.LessonGrades.Select(x => x.Grade.Value).ToList()
             })
             .FirstOrDefaultAsync();
 
@@ -106,77 +106,76 @@ public class LessonManager : ILessonService
         return lesson;
     }
 
-    public async Task<int> Update(int lessonId, UpdateLessonRequest request)
+    public async Task<int> UpdateAsync(int lessonId, UpdateLessonRequest request)
     {
         var lesson = await _lessonRepository.GetQuery().Where(x => x.Active && x.Id == lessonId)
-            .Include(x => x.LessonGradeTeachers)
+            .Include(x => x.LessonGrades)
             .ThenInclude(x => x.Grade)
-            .Include(x => x.LessonGradeTeachers)
+            .Include(x => x.LessonGrades)
             .ThenInclude(x => x.Exams)
-            .Include(x => x.LessonGradeTeachers)
-            // .ThenInclude(x => x.LessonGradeTeachers)
+            .Include(x => x.LessonGrades)
+            .ThenInclude(x => x.LessonGradeTeachers)
             .FirstOrDefaultAsync();
 
         if (lesson is null)
             throw new NotFoundException("Belə bir dərs tapılmadı");
 
-        var newLessonGrades = new List<LessonGradeTeacher>();
-        var deleteLessonGrades = new List<LessonGradeTeacher>();
+        var newLessonGrades = new List<LessonGrade>();
+        var deleteLessonGrades = new List<LessonGrade>();
 
         foreach (var gradeId in request.GradeIds)
         {
             await _gradeService.CheckById(gradeId);
 
-            var lessonGrade = lesson.LessonGradeTeachers.FirstOrDefault(x => x.GradeId == gradeId);
+            var lessonGrade = lesson.LessonGrades.FirstOrDefault(x => x.GradeId == gradeId);
 
             if (lessonGrade is null)
             {
-                newLessonGrades.Add(new LessonGradeTeacher { LessonId = lessonId, GradeId = gradeId });
+                newLessonGrades.Add(new LessonGrade { LessonId = lessonId, GradeId = gradeId });
             }
         }
 
-        // foreach (var lessonGrade in lesson.LessonGradeTeachers)
-        // {
-        //     var lessonGradeCheck = request.GradeIds.Any(x => x == lessonGrade.GradeId);
-        //
-        //     if (!lessonGradeCheck && lessonGrade.Exams.Count == 0 && lessonGrade.LessonGradeTeachers.Count == 0)
-        //         deleteLessonGrades.Add(lessonGrade);
-        //     else if (!lessonGradeCheck && lessonGrade.Exams.Count > 0)
-        //         throw new BadHttpRequestException(
-        //             $"{lessonGrade.Lesson.Name} {lessonGrade.Grade.Value} sinifi listdən çıxara bilmərsiniz.{lessonGrade.Lesson.Name} {lessonGrade.Grade.Value} sinifi üçün imtahan mövcuddur. ");
-        //     else if (!lessonGradeCheck && lessonGrade.LessonGradeTeachers.Count > 0)
-        //         throw new BadHttpRequestException(
-        //             $"{lessonGrade.Lesson.Name} {lessonGrade.Grade.Value} sinifi listdən çıxara bilmərsiniz.{lessonGrade.Lesson.Name} {lessonGrade.Grade.Value} sinifinə bağlı müəllim mövcuddur. ");
-        // }
-        //
-        // await _lessonGradeRepository.BeginTransaction();
-        //
-        // await _lessonGradeRepository.AddRangeAsync(newLessonGrades);
-        // await _lessonGradeRepository.DeleteRangeAsync(deleteLessonGrades);
-        //
-        // await _lessonGradeRepository.Commit();
+        foreach (var lessonGrade in lesson.LessonGrades)
+        {
+            var lessonGradeCheck = request.GradeIds.Any(x => x == lessonGrade.GradeId);
+        
+            if (!lessonGradeCheck && lessonGrade.Exams.Count == 0 && lessonGrade.LessonGradeTeachers.Count == 0)
+                deleteLessonGrades.Add(lessonGrade);
+            else if (!lessonGradeCheck && lessonGrade.Exams.Count > 0)
+                throw new BadHttpRequestException(
+                    $"{lessonGrade.Lesson.Name} {lessonGrade.Grade.Value} sinifi listdən çıxara bilmərsiniz.{lessonGrade.Lesson.Name} {lessonGrade.Grade.Value} sinifi üçün imtahan mövcuddur. ");
+            else if (!lessonGradeCheck && lessonGrade.LessonGradeTeachers.Count > 0)
+                throw new BadHttpRequestException(
+                    $"{lessonGrade.Lesson.Name} {lessonGrade.Grade.Value} sinifi listdən çıxara bilmərsiniz.{lessonGrade.Lesson.Name} {lessonGrade.Grade.Value} sinifinə bağlı müəllim mövcuddur. ");
+        }
+        
+        await _lessonGradeRepository.BeginTransaction();
+        
+        await _lessonGradeRepository.AddRangeAsync(newLessonGrades);
+        await _lessonGradeRepository.DeleteRangeAsync(deleteLessonGrades);
+        
+        await _lessonGradeRepository.Commit();
 
         return lessonId;
     }
 
-
-    public async Task Delete(int lessonId)
+    public async Task DeleteAsync(int lessonId)
     {
         var lesson = await _lessonRepository.GetQuery().Where(x => x.Active && x.Id == lessonId)
-            .Include(x => x.LessonGradeTeachers)
+            .Include(x => x.LessonGrades)
             .ThenInclude(x => x.Grade)
-            .Include(x => x.LessonGradeTeachers)
+            .Include(x => x.LessonGrades)
             .ThenInclude(x => x.Exams)
-            .Include(x => x.LessonGradeTeachers)
-            // .ThenInclude(x => x.LessonGradeTeachers)
+            .Include(x => x.LessonGrades)
+            .ThenInclude(x => x.LessonGradeTeachers)
             .FirstOrDefaultAsync();
 
         if (lesson is null)
             throw new NotFoundException("Belə bir dərs tapılmadı");
 
-        var deleteLessonGrades = new List<LessonGradeTeacher>();
+        var deleteLessonGrades = new List<LessonGrade>();
 
-        foreach (var lessonGrade in lesson.LessonGradeTeachers)
+        foreach (var lessonGrade in lesson.LessonGrades)
         {
             if (lessonGrade.Exams.Count == 0)
                 deleteLessonGrades.Add(lessonGrade);
@@ -185,13 +184,13 @@ public class LessonManager : ILessonService
                     $"{lessonGrade.Lesson.Name} dərsini silə bilmərsiniz.{lessonGrade.Lesson.Name} dərsi üçün imtahan mövcuddur");
         }
 
-        // await _lessonGradeRepository.BeginTransaction();
-        //
-        // await _lessonRepository.DeleteAsync(lesson);
-        // await _lessonGradeRepository.DeleteRangeAsync(deleteLessonGrades);
-        // await _lessonGradeTeacherRepository.DeleteRangeAsync(lesson.LessonGrades.SelectMany(x => x.LessonGradeTeachers)
-        //     .ToList());
-        //
-        // await _lessonGradeRepository.Commit();
+        await _lessonGradeRepository.BeginTransaction();
+        
+        await _lessonRepository.DeleteAsync(lesson);
+        await _lessonGradeRepository.DeleteRangeAsync(deleteLessonGrades);
+        await _lessonGradeTeacherRepository.DeleteRangeAsync(lesson.LessonGrades.SelectMany(x => x.LessonGradeTeachers)
+            .ToList());
+        
+        await _lessonGradeRepository.Commit();
     }
 }
