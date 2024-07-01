@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExamApplication.Core.Entities.Models;
 
-public class Grade : CommonEntity
+public class Grade :  BaseEntity, ISoftDeletedEntity, IActiveEntity
 {
     public Grade()
     {
@@ -17,4 +17,6 @@ public class Grade : CommonEntity
 
     public virtual ICollection<PupilGrade> PupilGrades { get; set; }
     public virtual ICollection<LessonGrade> LessonGrades { get; set; }
+    public bool Deleted { get; set; }
+    public bool Active { get; set; }
 }
