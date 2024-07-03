@@ -1,7 +1,7 @@
-@model List<ExamApplication.Business.Models.Lessons.LessonDto>
+﻿@model System.Collections.Generic.List<ExamApplication.Business.Models.Grades.GradeDto>
 
 @{
-    ViewBag.Title = "Dərslər";
+    ViewBag.Title = "Siniflər";
     Layout = "_Layout";
     int i = 0;
 }
@@ -12,19 +12,15 @@
             <thead>
             <tr class="table-primary">
                 <th scope="col">#</th>
-                <th scope="col">Dərsin adı</th>
-                <th scope="col">Dərsin kodu</th>
-                <th scope="col">Dərsin keçirildiyi siniflər</th>
+                <th scope="col">Sinifin nömrəsi</th>
             </tr>
             </thead>
             <tbody>
-            @foreach (var lesson in Model)
+            @foreach (var grade in Model)
             {
                 <tr>
                     <th scope="row">@(++i)</th>
-                    <td>@lesson.Name</td>
-                    <td>@lesson.Code</td>
-                    <td>@string.Join(", ", lesson.Grades)</td>
+                    <td>@grade.Value</td>
                 </tr>
             }
             </tbody>
