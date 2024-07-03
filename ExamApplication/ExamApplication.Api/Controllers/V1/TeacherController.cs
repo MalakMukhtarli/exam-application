@@ -26,7 +26,7 @@ public class TeacherController : ControllerBase
 
     [HttpPost(ApiRoutes.Teacher.CreateLessonGrade)]
     public async Task<IActionResult> CreateLessonGradeTeacher([FromRoute] int teacherId,
-        [FromBody] List<SaveLessonGradeTeacherRequest> requests, [FromServices] ITeacherService service)
+        [FromBody] SaveLessonGradeTeacherRequest requests, [FromServices] ITeacherService service)
     {
         await service.CreateLessonGradeTeacherAsync(teacherId, requests);
         return Ok();

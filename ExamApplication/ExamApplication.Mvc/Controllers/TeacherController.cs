@@ -1,3 +1,4 @@
+using ExamApplication.Business.Models.Teachers;
 using ExamApplication.Business.Services.Teachers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,5 +18,19 @@ public class TeacherController : Controller
         var response = await _teacherService.GetAllAsync();
         
         return View(response);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(SaveTeacherRequest request)
+    {
+        await _teacherService.CreateAsync(request);
+        return RedirectToAction("Index", "Home");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateLessonGrade(int teacherId, SaveLessonGradeTeacherRequest request)
+    {
+        await _teacherService.CreateLessonGradeTeacherAsync(teacherId, request);
+        return RedirectToAction("Index", "Home");
     }
 }

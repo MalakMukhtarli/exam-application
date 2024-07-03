@@ -9,6 +9,7 @@ public interface ILessonService
     Task<int> CreateAsync(SaveLessonRequest request);
     Task CheckByIdAsync(int lessonId);
     Task<LessonGrade> CheckByGradeIdAsync(int lessonId, int gradeId);
+    Task<LessonGrade> CheckByLessonGradeIdAsync(int lessonGradeId);
     Task<LessonDto> GetByIdAsync(int lessonId);
     Task<int> UpdateAsync(int lessonId, UpdateLessonRequest request);
     Task DeleteAsync(int lessonId);

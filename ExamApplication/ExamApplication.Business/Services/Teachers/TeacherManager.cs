@@ -69,9 +69,9 @@ public class TeacherManager : ITeacherService
         return newTeacher.Id;
     }
 
-    public async Task CreateLessonGradeTeacherAsync(int teacherId, List<SaveLessonGradeTeacherRequest> requests)
+    public async Task CreateLessonGradeTeacherAsync(int teacherId, SaveLessonGradeTeacherRequest request)
     {
-        if (requests is null)
+        if (request is null)
             throw new BadHttpRequestException("Məlumatlar doldurulmayıb");
 
         var isExistTeacher = await _teacherRepository.GetQuery().AnyAsync(x => x.Id == teacherId);
@@ -81,24 +81,22 @@ public class TeacherManager : ITeacherService
 
         var lessonGradeTeachers = new List<LessonGradeTeacher>();
 
-        foreach (var request in requests)
+        foreach (var lessonGradeId in request.LessonGradeIds)
         {
-            await _lessonService.CheckByIdAsync(request.LessonId);
-            await _gradeService.CheckById(request.GradeId);
-
-            var lessonGrade = await _lessonService.CheckByGradeIdAsync(request.LessonId, request.GradeId);
+            var lessonGrade = await _lessonService.CheckByLessonGradeIdAsync(lessonGradeId);
 
             var isExistLessonGradeTeacher = await _lessonGradeTeacherRepository.GetQuery()
                 .AnyAsync(x => x.TeacherId == teacherId 
-                               // && x.LessonGradeId == lessonGrade.Id
+                               && x.LessonGradeId == lessonGrade.Id
                                );
 
             if (isExistLessonGradeTeacher)
                 throw new DuplicateConflictException(
                     $"Bu müəllim, seçdiyiniz dərs və sinif üçün daha əvvəl əlavə edilmişdir");
 
-            lessonGradeTeachers.Add(new LessonGradeTeacher { TeacherId = teacherId, 
-                // LessonGradeId = lessonGrade.Id 
+            lessonGradeTeachers.Add(new LessonGradeTeacher { 
+                TeacherId = teacherId, 
+                LessonGradeId = lessonGrade.Id 
             });
         }
 

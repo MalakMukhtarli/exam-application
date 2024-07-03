@@ -88,6 +88,17 @@ public class LessonManager : ILessonService
 
         return lessonGrade;
     }
+    
+    public async Task<LessonGrade> CheckByLessonGradeIdAsync(int lessonGradeId)
+    {
+        var lessonGrade = await _lessonGradeRepository.GetQuery()
+            .FirstOrDefaultAsync(x => x.Id == lessonGradeId);
+
+        if (lessonGrade is null)
+            throw new NotFoundException("Dərs və ya Sinif düzgün seçilməyib");
+
+        return lessonGrade;
+    }
 
     public async Task<LessonDto> GetByIdAsync(int lessonId)
     {
