@@ -33,11 +33,11 @@ public class ExamManager : IExamService
     {
         var exams = await _examRepository.GetQuery().Where(x => x.Active)
             .Include(x => x.LessonGrade)
-            .ThenInclude(x => x.Grade)
+                .ThenInclude(x => x.Grade)
             .Include(x => x.LessonGrade)
-            .ThenInclude(x => x.Lesson)
+                .ThenInclude(x => x.Lesson)
             .Include(x => x.PupilExams)
-            .ThenInclude(x => x.Pupil)
+                .ThenInclude(x => x.Pupil)
             .Select(x => new ExamDto
             {
                 Id = x.Id, ExamDate = x.ExamDate, LessonCode = x.LessonGrade.Lesson.Code, PupilExams = x.PupilExams

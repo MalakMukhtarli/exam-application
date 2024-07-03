@@ -1,0 +1,38 @@
+﻿@model System.Collections.Generic.List<ExamApplication.Business.Models.Exams.ExamDto>
+
+@{
+    ViewBag.Title = "İmtahanlar";
+    Layout = "_Layout";
+    int i = 0;
+}
+
+<div class="container-fluid px-5 py-5">
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+            <tr class="table-primary">
+                <th scope="col">#</th>
+                <th scope="col">Şagirdin nömrəsi</th>
+                <th scope="col">Dərsin kodu</th>
+                <th scope="col">İmtahan tarixi</th>
+                <th scope="col">Şagirdin qiyməti</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var exam in Model)
+            {
+                foreach (var pupil in exam.PupilExams)
+                {
+                    <tr>
+                        <th scope="row">@(++i)</th>
+                        <td>@pupil.PupilNumber</td>
+                        <td>@exam.LessonCode</td>
+                        <td>@exam.ExamDate</td>
+                        <td>@pupil.Mark</td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
