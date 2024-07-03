@@ -1,0 +1,33 @@
+﻿@model System.Collections.Generic.List<ExamApplication.Business.Models.Pupils.PupilDto>
+
+@{
+    ViewBag.Title = "Şagirdlər";
+    Layout = "_Layout";
+    int i = 0;
+}
+
+<div class="container-fluid px-5 py-5">
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+            <tr class="table-primary">
+                <th scope="col">#</th>
+                <th scope="col">Şagirdin nömrəsi</th>
+                <th scope="col">Şagirdin adı soyadı</th>
+                <th scope="col">Şagirdin oxuduğu sinif</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var pupil in Model)
+            {
+                <tr>
+                    <th scope="row">@(++i)</th>
+                    <td>@pupil.Number</td>
+                    <td>@pupil.Name @pupil.Surname</td>
+                    <td>@pupil.Grade</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
