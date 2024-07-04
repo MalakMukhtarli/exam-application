@@ -21,16 +21,30 @@
             <tbody>
             @foreach (var exam in Model)
             {
-                foreach (var pupil in exam.PupilExams)
+                if (exam.PupilExams.Count > 0)
+                {
+                    foreach (var pupil in exam.PupilExams)
+                    {
+                        <tr>
+                            <th scope="row">@(++i)</th>
+                            <td>@pupil.PupilNumber</td>
+                            <td>@exam.LessonCode</td>
+                            <td>@exam.ExamDate</td>
+                            <td>@pupil.Mark</td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
                         <th scope="row">@(++i)</th>
-                        <td>@pupil.PupilNumber</td>
+                        <td> </td>
                         <td>@exam.LessonCode</td>
                         <td>@exam.ExamDate</td>
-                        <td>@pupil.Mark</td>
+                        <td> </td>
                     </tr>
                 }
+                
             }
             </tbody>
         </table>

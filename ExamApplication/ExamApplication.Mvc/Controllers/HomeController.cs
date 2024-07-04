@@ -15,7 +15,10 @@ public class HomeController : Controller
     private readonly ILessonGradeService _lessonGradeService;
     private readonly ITeacherService _teacherService;
 
-    public HomeController(ILogger<HomeController> logger, IGradeService gradeService, ILessonGradeService lessonGradeService, ITeacherService teacherService)
+    public HomeController(ILogger<HomeController> logger, 
+        IGradeService gradeService, 
+        ILessonGradeService lessonGradeService, 
+        ITeacherService teacherService)
     {
         _logger = logger;
         _gradeService = gradeService;
@@ -28,6 +31,7 @@ public class HomeController : Controller
         ViewBag.Grades = await _gradeService.GetAllAsync();
         ViewBag.LessonGrade = await _lessonGradeService.GetAllAsync();
         ViewBag.Teachers = await _teacherService.GetAllAsync();
+        
         
         return View();
     }

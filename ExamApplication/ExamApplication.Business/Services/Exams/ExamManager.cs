@@ -28,21 +28,28 @@ public class ExamManager : IExamService
 
     public async Task<List<ExamDto>> GetAll()
     {
-        var exams = await _examRepository.GetQuery().Where(x => x.Active)
+        var exams = await _examRepository.GetQuery()
+            .Where(x => x.Active)
             .Include(x => x.LessonGrade)
-                .ThenInclude(x => x.Grade)
+            .ThenInclude(x => x.Grade)
             .Include(x => x.LessonGrade)
-                .ThenInclude(x => x.Lesson)
-            .Include(x => x.PupilExams)
-                .ThenInclude(x => x.Pupil)
-            .Select(x => new ExamDto
-            {
-                Id = x.Id, ExamDate = x.ExamDate, LessonCode = x.LessonGrade.Lesson.Code, PupilExams = x.PupilExams
-                    .Select(y => new PupilExamDto { Id = y.Id, PupilNumber = y.Pupil.Number, Mark = y.Mark }).ToList()
-            })
+            .ThenInclude(x => x.Lesson)
+            .Include(x => x.PupilExams.Where(y => y.Active))
+            .ThenInclude(x => x.Pupil)
+            .Where(x => x.LessonGrade.Lesson.Active && x.LessonGrade.Grade.Active)
             .ToListAsync();
 
-        return exams;
+        var examDto = exams.Select(x =>
+            new ExamDto
+            {
+                Id = x.Id,
+                ExamDate = x.ExamDate,
+                LessonCode = x.LessonGrade.Lesson.Code,
+                PupilExams = x.PupilExams.Select(y => new PupilExamDto
+                        { Id = y.Id, PupilNumber = y.Pupil.Number, Mark = y.Mark }).ToList()
+            }).ToList();
+
+        return examDto;
     }
 
     public async Task<int> Create(SaveExamRequest request)
@@ -123,20 +130,20 @@ public class ExamManager : IExamService
 
         return request.PupilExamId;
     }
-    
+
     public async Task Delete(int examId)
     {
         var exam = await _examRepository.GetQuery().Where(x => x.Active && x.Id == examId)
-            .Include(x => x.PupilExams.Where(x=>!x.Deleted && x.Mark ==0))
+            .Include(x => x.PupilExams.Where(x => !x.Deleted && x.Mark == 0))
             .FirstOrDefaultAsync();
         if (exam is null)
             throw new NotFoundException("Belə bir imtahan tapılmadı");
 
         await _examRepository.BeginTransaction();
-        
+
         await _examRepository.DeleteAsync(exam);
         await _pupilExamRepository.DeleteRangeAsync(exam.PupilExams.ToList());
-        
+
         await _examRepository.Commit();
     }
 }
