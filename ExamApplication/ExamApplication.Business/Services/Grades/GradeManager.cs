@@ -15,7 +15,7 @@ public class GradeManager : IGradeService
         _gradeRepository = gradeRepository;
     }
 
-    public async Task<List<GradeDto>> GetAll()
+    public async Task<List<GradeDto>> GetAllAsync()
     {
         var grades = await _gradeRepository.GetQuery().Where(x => x.Active)
             .Include(x => x.LessonGrades.Where(y=> !y.Deleted))
@@ -26,7 +26,7 @@ public class GradeManager : IGradeService
         return grades;
     }
 
-    public async Task<int> Create(byte grade)
+    public async Task<int> CreateAsync(byte grade)
     {
         if (grade < 1 || grade > 11)
             throw new NotFoundException("0-dan kiçik və ya 11-dən böyük sinif ola bilməz");
@@ -41,7 +41,7 @@ public class GradeManager : IGradeService
         return newGrade.Id;
     }
     
-    public async Task CheckById(int gradeId)
+    public async Task CheckByIdAsync(int gradeId)
     {
         var grade = await _gradeRepository.GetQuery().AnyAsync(x => x.Active && x.Id == gradeId);
 
@@ -49,7 +49,7 @@ public class GradeManager : IGradeService
             throw new NotFoundException("Belə bir sinif tapılmadı");
     }
     
-    public async Task<GradeDto> GetById(int gradeId)
+    public async Task<GradeDto> GetByIdAsync(int gradeId)
     {
         var grade = await _gradeRepository.GetQuery().Where(x => x.Active && x.Id == gradeId)
             .Select(x => new GradeDto { Id = x.Id, Value = x.Value }).FirstOrDefaultAsync();
@@ -60,7 +60,7 @@ public class GradeManager : IGradeService
         return grade;
     }
     
-    public async Task<int> Update(int gradeId, UpdateGradeRequest request)
+    public async Task<int> UpdateAsync(int gradeId, UpdateGradeRequest request)
     {
         var grade = await _gradeRepository.GetQuery().FirstOrDefaultAsync(x => x.Active && x.Id == gradeId);
 
@@ -74,7 +74,7 @@ public class GradeManager : IGradeService
         return gradeId;
     }
     
-    public async Task Delete(int gradeId)
+    public async Task DeleteAsync(int gradeId)
     {
         var grade = await _gradeRepository.GetQuery().Where(x => x.Active && x.Id == gradeId)
             .Include(x=>x.PupilGrades)

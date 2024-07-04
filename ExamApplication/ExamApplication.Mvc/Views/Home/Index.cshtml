@@ -1,4 +1,5 @@
-﻿@{
+﻿@using ExamApplication.Business.Models.Grades
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -29,11 +30,11 @@
 
                         <div class="mb-3 col-2">
                             <label for="gradesChooseForLesson" class="form-label">Siniflər seçin</label>
-
                             <select class="js-example-basic-multiple w-100 gradesChooseForLesson" style="width: 200px;" name="GradeIds" multiple="multiple">
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
+                                @foreach (var grade in (ViewBag.Grades as List<GradeDto>)!)
+                                {
+                                    <option value="@grade.Id"> @grade.Value</option>
+                                }
                             </select>
                         </div>
 
@@ -70,30 +71,6 @@
                             <input type="text" class="form-control" id="teacherSurname" name="Surname">
                         </div>
                         <div class="mb-3 col-12"></div>
-
-                        <!-- <div class="mb-3 col-2">
-                            <label for="lessonName" class="form-label">Dərslər seçin</label>
-              
-                            <select class="js-example-basic-multiple w-100" name="states[Dərslər seçin]" multiple="multiple">
-                                <option value="AL">Fizika</option>
-                                <option value="WY">Kimya</option>
-                                <option value="WY">Riyaziyyat</option>
-                            </select>
-                        </div>
-                        <div class="mb-3 col-12"></div>
-              
-                        <div class="mb-3 col-2">
-                            <label for="lessonName" class="form-label">Siniflər seçin</label>
-              
-                            <select class="js-example-basic-multiple w-100" name="states[Siniflər seçin]" multiple="multiple">
-                                <option value="AL">7</option>
-                                <option value="WY">8</option>
-                                <option value="WY">9</option>
-                            </select>
-                        </div>
-              
-                        <div class="mb-3 col-12"></div> -->
-
 
                         <div class="col-auto">
                             <button type="submit" class="btn btn-primary mb-3">Yeni müəllim əlavə et</button>
@@ -143,7 +120,6 @@
                                 <option value="9">9</option>
                             </select>
                         </div>
-
                         <div class="mb-3 col-12"></div>
                         <div class="col-auto">
                             <button type="submit" class="btn btn-primary mb-3">Yeni şagird əlavə et</button>
@@ -169,7 +145,6 @@
                     <div class="row mb-5">
                         <div class="mb-3 col-2">
                             <label for="lessonChooseForExam" class="form-label">İmtahan olacaq dərsi və sinifi seçin</label>
-
                             <select class="js-example-basic-single w-100 lessonChooseForExam" name="states">
                                 @*  ???  *@
                                 <option value="AL">Fizika 7</option>
@@ -178,7 +153,6 @@
                             </select>
                         </div>
                         <div class="mb-3 col-12"></div>
-
                         <div class="mb-3 col-6">
                             <label for="examDate" class="form-label">İmtahan saatı</label>
                             <input type="datetime-local" class="form-control" id="examDate" name="ExamDate">
@@ -193,7 +167,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="accordion-item">
     <h2 class="accordion-header">
@@ -250,18 +223,15 @@
                     <div class="row mb-5">
                         <div class="mb-3 col-2">
                             <label for="examDateChoose" class="form-label">İmtahan seçin</label>
-
                             <select class="js-example-basic-single w-100 examDateChoose" name="PupilExamId">
                                 <option value="AL">10.10.2023 Riyaziyyat 5</option>
-                                <option value="WY">11.10.2023 Riyaziyyat 5</option>
-                                <option value="WY">12.10.2023</option>
+                                <option value="WY">11.10.2023 Riyaziyyat 9</option>
+                                <option value="WY">12.10.2023 Fizika 7</option>
                             </select>
                         </div>
                         <div class="mb-3 col-12"></div>
-
                         <div class="mb-3 col-2">
                             <label for="pupilChooseforExamResult" class="form-label">Şagird seçin</label>
-
                             <select class="js-example-basic-single w-100 pupilChooseforExamResult" name="states">
                                 <option value="AL">Əli</option>
                                 <option value="WY">Əliyar</option>
@@ -269,14 +239,11 @@
                             </select>
                         </div>
                         <div class="mb-3 col-12"></div>
-
                         <div class="mb-3 col-6">
                             <label for="pupilMark" class="form-label">Qiymət</label>
                             <input type="number" class="form-control pupilMark" id="pupilMark">
                         </div>
-
                         <div class="mb-3 col-12"></div>
-
                         <div class="col-auto">
                             <button type="submit" class="btn btn-primary mb-3">Yeni imtahan əlavə et</button>
                         </div>

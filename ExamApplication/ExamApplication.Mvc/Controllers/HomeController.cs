@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using ExamApplication.Business.Services.Grades;
 using Microsoft.AspNetCore.Mvc;
 using ExamApplication.Mvc.Models;
 
@@ -7,14 +8,18 @@ namespace ExamApplication.Mvc.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly IGradeService _gradeService;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, IGradeService gradeService)
     {
         _logger = logger;
+        _gradeService = gradeService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        ViewBag.Grades = await _gradeService.GetAllAsync();
+        
         return View();
     }
 

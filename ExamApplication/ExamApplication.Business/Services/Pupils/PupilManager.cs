@@ -53,7 +53,7 @@ public class PupilManager : IPupilService
         if (isExist is not null)
             throw new DuplicateConflictException("Bu nömrəli şagird daha əvvəl yaradılıb");
 
-        await _gradeService.CheckById(request.GradeId);
+        await _gradeService.CheckByIdAsync(request.GradeId);
 
         var newPupil = new Pupil
         {
@@ -125,7 +125,7 @@ public class PupilManager : IPupilService
         if (pupil is null)
             throw new NotFoundException("Belə bir şagird tapılmadı");
 
-        await _gradeService.CheckById(request.GradeId);
+        await _gradeService.CheckByIdAsync(request.GradeId);
 
         if (pupil.PupilGrades.FirstOrDefault()?.GradeId == request.GradeId)
             throw new DuplicateConflictException("Daha əvvəl əlavə olunmuşdur");

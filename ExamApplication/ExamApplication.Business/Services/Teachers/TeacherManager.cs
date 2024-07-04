@@ -153,7 +153,7 @@ public class TeacherManager : ITeacherService
         foreach (var request in requests)
         {
             await _lessonService.CheckByIdAsync(request.LessonId);
-            await _gradeService.CheckById(request.GradeId);
+            await _gradeService.CheckByIdAsync(request.GradeId);
 
             var lessonGrade = await _lessonService.CheckByGradeIdAsync(request.LessonId, request.GradeId);
 

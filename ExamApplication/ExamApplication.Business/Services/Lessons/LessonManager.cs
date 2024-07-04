@@ -55,7 +55,7 @@ public class LessonManager : ILessonService
 
         foreach (var gradeId in request.GradeIds)
         {
-            await _gradeService.CheckById(gradeId);
+            await _gradeService.CheckByIdAsync(gradeId);
         }
 
         var lesson = new Lesson
@@ -136,7 +136,7 @@ public class LessonManager : ILessonService
 
         foreach (var gradeId in request.GradeIds)
         {
-            await _gradeService.CheckById(gradeId);
+            await _gradeService.CheckByIdAsync(gradeId);
 
             var lessonGrade = lesson.LessonGrades.FirstOrDefault(x => x.GradeId == gradeId);
 

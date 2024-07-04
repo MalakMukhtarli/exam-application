@@ -6,6 +6,9 @@ public class SaveLessonGradeTeacherRequestValidator:  BaseValidator<SaveLessonGr
 {
     public SaveLessonGradeTeacherRequestValidator() : base()
     {
+        RuleFor(e => e.LessonGradeIds)
+            .NotEmpty().WithMessage("Dərs və sinif mütləq seçilməlidir");
+        
         // RuleFor(e => e.GradeId)
         //     .NotEmpty().WithMessage("Sinif mütləq seçilməlidir");
         // RuleFor(e => e.LessonId)

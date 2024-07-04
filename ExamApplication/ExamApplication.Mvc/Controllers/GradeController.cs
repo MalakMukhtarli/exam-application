@@ -14,7 +14,7 @@ public class GradeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var response = await _gradeService.GetAll();
+        var response = await _gradeService.GetAllAsync();
         
         return View(response);
     }
