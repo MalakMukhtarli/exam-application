@@ -53,12 +53,13 @@ public class ExamManager : IExamService
         if (request is null)
             throw new BadHttpRequestException("Məlumatlar doldurulmayıb");
 
-        await _lessonService.CheckByIdAsync(request.LessonId);
-        await _gradeService.CheckByIdAsync(request.GradeId);
+        // await _lessonService.CheckByIdAsync(request.LessonId);
+        // await _gradeService.CheckByIdAsync(request.GradeId);
 
-        var lessonGrade = await _lessonService.CheckByGradeIdAsync(request.LessonId, request.GradeId);
+        // var lessonGrade = await _lessonService.CheckByGradeIdAsync(request.LessonId, request.GradeId);
+        var lessonGrade = await _lessonService.CheckByLessonGradeIdAsync(request.LessonGradeId);
 
-        var pupilGrades = await _pupilService.GetByGradeId(request.GradeId);
+        var pupilGrades = await _pupilService.GetByGradeId(lessonGrade.GradeId);
 
         var exam = new Exam
         {

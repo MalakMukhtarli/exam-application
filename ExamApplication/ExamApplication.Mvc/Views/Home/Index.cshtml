@@ -1,4 +1,5 @@
 ﻿@using ExamApplication.Business.Models.Grades
+@using ExamApplication.Business.Models.LessonGrades
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -115,9 +116,10 @@
                             <label for="gradesChooseForPupil" class="form-label">Sinif seçin</label>
 
                             <select class="js-example-basic-single w-100 gradesChooseForPupil" name="GradeId">
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
+                                @foreach (var grade in (ViewBag.Grades as List<GradeDto>)!)
+                                {
+                                    <option value="@grade.Id"> @grade.Value</option>
+                                }
                             </select>
                         </div>
                         <div class="mb-3 col-12"></div>
@@ -145,11 +147,11 @@
                     <div class="row mb-5">
                         <div class="mb-3 col-2">
                             <label for="lessonChooseForExam" class="form-label">İmtahan olacaq dərsi və sinifi seçin</label>
-                            <select class="js-example-basic-single w-100 lessonChooseForExam" name="states">
-                                @*  ???  *@
-                                <option value="AL">Fizika 7</option>
-                                <option value="WY">Kimya 8</option>
-                                <option value="WY">Riyaziyyat 9</option>
+                            <select class="js-example-basic-single w-100 lessonChooseForExam" name="LessonGradeId">
+                                @foreach (var lessonGrade in (ViewBag.LessonGrade as List<LessonGradeDto>)!)
+                                {
+                                    <option value="@lessonGrade.Id"> @lessonGrade.Lesson  @lessonGrade.Grade</option>
+                                }
                             </select>
                         </div>
                         <div class="mb-3 col-12"></div>

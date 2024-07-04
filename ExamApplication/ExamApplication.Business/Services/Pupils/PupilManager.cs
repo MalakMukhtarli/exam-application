@@ -17,7 +17,8 @@ public class PupilManager : IPupilService
     private readonly IGradeRepository _gradeRepository;
 
     public PupilManager(IPupilRepository pupilRepository, IGradeService gradeService,
-        IRepositoryAsync<PupilGrade> pupilGradeRepository, IGradeRepository gradeRepository, IRepositoryAsync<PupilExam> pupilExamRepository)
+        IRepositoryAsync<PupilGrade> pupilGradeRepository, IGradeRepository gradeRepository,
+        IRepositoryAsync<PupilExam> pupilExamRepository)
     {
         _pupilRepository = pupilRepository;
         _gradeService = gradeService;
@@ -60,22 +61,25 @@ public class PupilManager : IPupilService
             Number = request.Number,
             Name = request.Name,
             Surname = request.Surname,
-            PupilGrades = new List<PupilGrade> { new PupilGrade { GradeId = request.GradeId } }
+            PupilGrades = new List<PupilGrade> { new() { GradeId = request.GradeId } },
+            PupilExams = new List<PupilExam>()
         };
 
-        var grade = await _gradeRepository.GetQuery().Where(x=> x.Id == request.GradeId)
-            .Include(x=>x.LessonGrades)
-            .ThenInclude(x=>x.Exams)
-            .FirstOrDefaultAsync()
-            ;
+        var exams = await _gradeRepository.GetQuery()
+                .Where(x => x.Id == request.GradeId)
+                .Include(x => x.LessonGrades)
+                .ThenInclude(x => x.Exams)
+                .Select(x => x.LessonGrades.SelectMany(y => y.Exams))
+                .FirstOrDefaultAsync();
 
         await _pupilRepository.BeginTransaction();
-        
-        var exam = grade.LessonGrades.SelectMany(x => x.Exams);
-        if (exam.Count() > 0)
+
+        if (exams != null)
         {
-            var pupilExam = new PupilExam { Pupil = newPupil, ExamId = exam.FirstOrDefault().Id };
-            await _pupilExamRepository.AddAsync(pupilExam);
+            foreach (var exam in exams)
+            {
+                newPupil.PupilExams.Add(new PupilExam { ExamId = exam.Id });
+            }
         }
 
         var newGrade = await _pupilRepository.AddAsync(newPupil);
@@ -136,23 +140,22 @@ public class PupilManager : IPupilService
 
         return pupilId;
     }
-    
+
     public async Task Delete(int pupilId)
     {
         var pupil = await _pupilRepository.GetQuery().Where(x => x.Active && x.Id == pupilId)
             .Include(x => x.PupilGrades.Where(y => !y.Deleted))
-            .Include(x=>x.PupilExams.Where(x=>!x.Deleted))
+            .Include(x => x.PupilExams.Where(x => !x.Deleted))
             .FirstOrDefaultAsync();
         if (pupil is null)
             throw new NotFoundException("Belə bir şagird tapılmadı");
 
         await _pupilRepository.BeginTransaction();
-        
+
         await _pupilRepository.DeleteAsync(pupil);
         await _pupilGradeRepository.DeleteRangeAsync(pupil.PupilGrades.ToList());
-        await _pupilExamRepository.DeleteRangeAsync(pupil.PupilExams.ToList()); 
-        
-        await _pupilRepository.Commit();
+        await _pupilExamRepository.DeleteRangeAsync(pupil.PupilExams.ToList());
 
+        await _pupilRepository.Commit();
     }
 }

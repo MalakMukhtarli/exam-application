@@ -15,6 +15,6 @@ public class RepositoryInstaller : IInstaller
         services.AddScoped<IPupilRepository, PupilRepository>();
         services.AddScoped<ITeacherRepository, TeacherRepository>();
         services.AddScoped<IExamRepository, ExamRepository>();
-
+        services.AddScoped<ILessonGradeRepository, LessonGradeRepository>();
     }
 }

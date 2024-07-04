@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using ExamApplication.Business.Services.Grades;
+using ExamApplication.Business.Services.LessonGrades;
+using ExamApplication.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 using ExamApplication.Mvc.Models;
 
@@ -9,16 +11,19 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IGradeService _gradeService;
+    private readonly ILessonGradeService _lessonGradeService;
 
-    public HomeController(ILogger<HomeController> logger, IGradeService gradeService)
+    public HomeController(ILogger<HomeController> logger, IGradeService gradeService, ILessonGradeService lessonGradeService)
     {
         _logger = logger;
         _gradeService = gradeService;
+        _lessonGradeService = lessonGradeService;
     }
 
     public async Task<IActionResult> Index()
     {
         ViewBag.Grades = await _gradeService.GetAllAsync();
+        ViewBag.LessonGrade = await _lessonGradeService.GetAllAsync();
         
         return View();
     }

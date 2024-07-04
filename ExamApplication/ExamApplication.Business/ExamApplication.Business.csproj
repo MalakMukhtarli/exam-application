@@ -18,11 +18,4 @@
       <ProjectReference Include="..\ExamApplication.Data\ExamApplication.Data.csproj" />
     </ItemGroup>
 
-
-
-
-    <ItemGroup>
-      <Folder Include="Services\" />
-    </ItemGroup>
-
 </Project>

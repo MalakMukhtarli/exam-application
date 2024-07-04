@@ -8,9 +8,7 @@ public class SaveExamRequestValidator : BaseValidator<SaveExamRequest>
     {
         RuleFor(e => e.ExamDate)
             .NotNull().WithMessage("İmtahan saatı boş ola bilməz");
-        RuleFor(e => e.GradeId)
-            .NotEmpty().WithMessage("Sinif boş ola bilməz");
-        RuleFor(e => e.LessonId)
-            .NotNull().WithMessage("Dərs boş ola bilməz");
+        RuleFor(e => e.LessonGradeId)
+            .NotEmpty().WithMessage("Sinif və dərs boş ola bilməz");
     }
 }
