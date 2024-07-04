@@ -1,7 +1,6 @@
 using ExamApplication.Business.Exceptions;
 using ExamApplication.Business.Models.Exams;
 using ExamApplication.Business.Models.PupilExams;
-using ExamApplication.Business.Services.Grades;
 using ExamApplication.Business.Services.Lessons;
 using ExamApplication.Business.Services.Pupils;
 using ExamApplication.Core.Entities.Models;
@@ -14,16 +13,14 @@ namespace ExamApplication.Business.Services.Exams;
 public class ExamManager : IExamService
 {
     private readonly IExamRepository _examRepository;
-    private readonly IGradeService _gradeService;
     private readonly ILessonService _lessonService;
     private readonly IPupilService _pupilService;
     private readonly IRepositoryAsync<PupilExam> _pupilExamRepository;
 
-    public ExamManager(IExamRepository examRepository, IGradeService gradeService, ILessonService lessonService,
+    public ExamManager(IExamRepository examRepository, ILessonService lessonService,
         IPupilService pupilService, IRepositoryAsync<PupilExam> pupilExamRepository)
     {
         _examRepository = examRepository;
-        _gradeService = gradeService;
         _lessonService = lessonService;
         _pupilService = pupilService;
         _pupilExamRepository = pupilExamRepository;

@@ -1,5 +1,6 @@
 ﻿@using ExamApplication.Business.Models.Grades
 @using ExamApplication.Business.Models.LessonGrades
+@using ExamApplication.Business.Models.Teachers
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -185,9 +186,10 @@
                             <label for="teacherChoose" class="form-label">Müəllim seçin</label>
 
                             <select class="js-example-basic-single w-100 col-2 teacherChoose" name="teacherId">
-                                <option value="AL">Əli</option>
-                                <option value="WY">Vəli</option>
-                                <option value="WY">Xəyalə</option>
+                                @foreach (var teacher in (ViewBag.Teachers as List<TeacherDto>)!)
+                                {
+                                     <option value="@teacher.Id"> @teacher.Name  @teacher.Surname</option>
+                                }
                             </select>
                         </div>
                         <div class="mb-3 col-12"></div>
@@ -196,14 +198,15 @@
                             <label for="lessonGradesChoose" class="form-label">DərsSiniflər seçin</label>
 
                             <select class="js-example-basic-multiple w-100 lessonGradesChoose" style="width: 250px;" name="LessonGradeIds" multiple="multiple">
-                                <option value="1">Fizika 7</option>
-                                <option value="4">Fizika 8</option>
-                                <option value="5">Riyaziyyat 9</option>
+                                @foreach (var lessonGrade in (ViewBag.LessonGrade as List<LessonGradeDto>)!)
+                                {
+                                    <option value="@lessonGrade.Id"> @lessonGrade.Lesson  @lessonGrade.Grade</option>
+                                }
                             </select>
                         </div>
                         <div class="mb-3 col-12"></div>
                         <div class="col-auto">
-                            <button type="submit" class="btn btn-primary mb-3">Yeni imtahan əlavə et</button>
+                            <button type="submit" class="btn btn-primary mb-3">Müəllim üçün dərs sinif əlavə et</button>
                         </div>
                     </div>
                 </form>
