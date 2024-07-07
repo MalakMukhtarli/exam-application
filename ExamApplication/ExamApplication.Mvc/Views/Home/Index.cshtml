@@ -1,6 +1,7 @@
 ﻿@using ExamApplication.Business.Models.Grades
 @using ExamApplication.Business.Models.LessonGrades
 @using ExamApplication.Business.Models.Teachers
+@using ExamApplication.Business.Models.Exams
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -188,7 +189,7 @@
                             <select class="js-example-basic-single w-100 col-2 teacherChoose" name="teacherId">
                                 @foreach (var teacher in (ViewBag.Teachers as List<TeacherDto>)!)
                                 {
-                                     <option value="@teacher.Id"> @teacher.Name  @teacher.Surname</option>
+                                    <option value="@teacher.Id"> @teacher.Name  @teacher.Surname</option>
                                 }
                             </select>
                         </div>
@@ -228,19 +229,19 @@
                     <div class="row mb-5">
                         <div class="mb-3 col-2">
                             <label for="examDateChoose" class="form-label">İmtahan seçin</label>
-                            <select class="js-example-basic-single w-100 examDateChoose" name="PupilExamId">
-                                <option value="AL">10.10.2023 Riyaziyyat 5</option>
-                                <option value="WY">11.10.2023 Riyaziyyat 9</option>
-                                <option value="WY">12.10.2023 Fizika 7</option>
+                            <select class="js-example-basic-single w-100 examDateChoose" name="Id" id="examDateChoose">
+                               <option value="0"> </option>
+                                @foreach (var exam in (ViewBag.Exams as List<ExamForSelectDto>)!)
+                                {
+                                    <option value="@exam.Id">@exam.ExamDate @exam.Lesson @exam.Grade</option>
+                                }
                             </select>
                         </div>
                         <div class="mb-3 col-12"></div>
                         <div class="mb-3 col-2">
-                            <label for="pupilChooseforExamResult" class="form-label">Şagird seçin</label>
-                            <select class="js-example-basic-single w-100 pupilChooseforExamResult" name="states">
-                                <option value="AL">Əli</option>
-                                <option value="WY">Əliyar</option>
-                                <option value="WY">Əliqulu</option>
+                            <label for="pupilChooseForExamResult" class="form-label">Şagird seçin</label>
+                            <select class="js-example-basic-single w-100 pupilChooseForExamResult" name="PupilId" id="pupilChooseForExamResult">
+                                
                             </select>
                         </div>
                         <div class="mb-3 col-12"></div>
@@ -260,3 +261,26 @@
     </div>
 </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#examDateChoose').change(function() {
+            var examId = $(this).val();
+            $.ajax({
+                url: '@Url.Action("GetAllPupilsByExamId", "Exam")',
+                type: 'GET',
+                data: { examId: examId },
+                success: function(data) {
+                    var $pupilSelect = $('#pupilChooseForExamResult');
+                    $pupilSelect.empty();
+                    $.each(data, function(i, pupil) {
+                        $pupilSelect.append('<option value="' + pupil.id + '">' + pupil.name + ' ' + pupil.surname + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        });
+    });
+</script>

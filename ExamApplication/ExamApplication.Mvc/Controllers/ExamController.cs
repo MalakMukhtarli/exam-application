@@ -33,4 +33,11 @@ public class ExamController : Controller
         await _examService.UpdatePupilExam(request);
         return RedirectToAction("Index", "Home");
     }
+
+    [HttpGet]
+    public async Task<JsonResult> GetAllPupilsByExamId(int examId)
+    {
+        var pupils = await _examService.GetAllPupilsByExamId(examId);
+        return Json(pupils);
+    }
 }

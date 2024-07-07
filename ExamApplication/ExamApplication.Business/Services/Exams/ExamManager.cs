@@ -31,8 +31,6 @@ public class ExamManager : IExamService
         var exams = await _examRepository.GetQuery()
             .Where(x => x.Active)
             .Include(x => x.LessonGrade)
-            .ThenInclude(x => x.Grade)
-            .Include(x => x.LessonGrade)
             .ThenInclude(x => x.Lesson)
             .Include(x => x.PupilExams.Where(y => y.Active))
             .ThenInclude(x => x.Pupil)
@@ -47,6 +45,29 @@ public class ExamManager : IExamService
                 LessonCode = x.LessonGrade.Lesson.Code,
                 PupilExams = x.PupilExams.Select(y => new PupilExamDto
                         { Id = y.Id, PupilNumber = y.Pupil.Number, Mark = y.Mark }).ToList()
+            }).ToList();
+
+        return examDto;
+    }
+    
+    public async Task<List<ExamForSelectDto>> GetAllForSelect()
+    {
+        var exams = await _examRepository.GetQuery()
+            .Where(x => x.Active)
+            .Include(x => x.LessonGrade)
+                .ThenInclude(x => x.Grade)
+            .Include(x => x.LessonGrade)
+                .ThenInclude(x => x.Lesson)
+            .Where(x => x.LessonGrade.Lesson.Active && x.LessonGrade.Grade.Active)
+            .ToListAsync();
+
+        var examDto = exams.Select(x =>
+            new ExamForSelectDto
+            {
+                Id = x.Id,
+                ExamDate = x.ExamDate.ToString("dd.MM.yyyy HH:mm:ss"),
+                Lesson = x.LessonGrade.Lesson.Name,
+                Grade = x.LessonGrade.Grade.Value
             }).ToList();
 
         return examDto;
@@ -79,7 +100,8 @@ public class ExamManager : IExamService
 
     public async Task<ExamDto> GetById(int examId)
     {
-        var exam = await _examRepository.GetQuery().Where(x => x.Active && x.Id == examId)
+        var exam = await _examRepository.GetQuery()
+            .Where(x => x.Active && x.Id == examId)
             .Include(x => x.LessonGrade)
             .ThenInclude(x => x.Grade)
             .Include(x => x.LessonGrade)
@@ -145,5 +167,25 @@ public class ExamManager : IExamService
         await _pupilExamRepository.DeleteRangeAsync(exam.PupilExams.ToList());
 
         await _examRepository.Commit();
+    }
+
+    public async Task<List<PupilExamSelectDto>> GetAllPupilsByExamId(int examId)
+    {
+        var pupils = await _pupilExamRepository.GetQuery()
+            .Where(x => x.Active && x.ExamId == examId && x.Mark == null)
+            .Include(x => x.Pupil)
+            .Select(y => new PupilExamSelectDto
+             {
+                 Id = y.Id, 
+                 Name = y.Pupil.Name, 
+                 Surname = y.Pupil.Surname, 
+             })
+            .ToListAsync()
+            ;
+
+        if (pupils is null)
+            throw new NotFoundException("Belə bir imtahan tapılmadı");
+
+        return pupils;
     }
 }
