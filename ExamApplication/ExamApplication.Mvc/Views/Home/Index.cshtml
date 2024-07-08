@@ -1,11 +1,9 @@
-﻿@using ExamApplication.Business.Models.Grades
-@using ExamApplication.Business.Models.LessonGrades
-@using ExamApplication.Business.Models.Teachers
-@using ExamApplication.Business.Models.Exams
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model ExamApplication.Mvc.ViewModels.HomeViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
-
 
 <div class="accordion accordion-flush" id="accordionFlushExample">
 <div class="accordion-item">
@@ -17,7 +15,8 @@
     <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
         <div class="accordion-body">
             <div class="container-fluid px-5 py-5">
-                <form method="post" asp-action="Create" asp-controller="Lesson">
+                <div id="lesson-error" class="alert alert-danger d-none">  </div>
+                <form id="lesson-form" method="post" asp-action="Create" asp-controller="Lesson">
                     <div class="row mb-5">
                         <div class="mb-3 col-6">
                             <label for="lessonName" class="form-label">Dərsin adı</label>
@@ -34,7 +33,7 @@
                         <div class="mb-3 col-2">
                             <label for="gradesChooseForLesson" class="form-label">Siniflər seçin</label>
                             <select class="js-example-basic-multiple w-100 gradesChooseForLesson" style="width: 200px;" name="GradeIds" multiple="multiple">
-                                @foreach (var grade in (ViewBag.Grades as List<GradeDto>)!)
+                                @foreach (var grade in Model.Data.Grades)
                                 {
                                     <option value="@grade.Id"> @grade.Value</option>
                                 }
@@ -62,7 +61,9 @@
         <div class="accordion-body">
 
             <div class="container-fluid px-5 py-5">
-                <form method="post" asp-action="Create" asp-controller="Teacher">
+                <div id="teacher-error" class="alert alert-danger d-none">  </div>
+                
+                <form id="teacher-form" method="post" asp-action="Create" asp-controller="Teacher">
                     <div class="row mb-5">
                         <div class="mb-3 col-6">
                             <label for="teacherName" class="form-label">Müəllimin adı</label>
@@ -118,7 +119,7 @@
                             <label for="gradesChooseForPupil" class="form-label">Sinif seçin</label>
 
                             <select class="js-example-basic-single w-100 gradesChooseForPupil" name="GradeId">
-                                @foreach (var grade in (ViewBag.Grades as List<GradeDto>)!)
+                                @foreach (var grade in Model.Data.Grades)
                                 {
                                     <option value="@grade.Id"> @grade.Value</option>
                                 }
@@ -150,7 +151,7 @@
                         <div class="mb-3 col-2">
                             <label for="lessonChooseForExam" class="form-label">İmtahan olacaq dərsi və sinifi seçin</label>
                             <select class="js-example-basic-single w-100 lessonChooseForExam" name="LessonGradeId">
-                                @foreach (var lessonGrade in (ViewBag.LessonGrade as List<LessonGradeDto>)!)
+                                @foreach (var lessonGrade in Model.Data.LessonGrades)
                                 {
                                     <option value="@lessonGrade.Id"> @lessonGrade.Lesson  @lessonGrade.Grade</option>
                                 }
@@ -187,7 +188,7 @@
                             <label for="teacherChoose" class="form-label">Müəllim seçin</label>
 
                             <select class="js-example-basic-single w-100 col-2 teacherChoose" name="teacherId">
-                                @foreach (var teacher in (ViewBag.Teachers as List<TeacherDto>)!)
+                                @foreach (var teacher in Model.Data.Teachers)
                                 {
                                     <option value="@teacher.Id"> @teacher.Name  @teacher.Surname</option>
                                 }
@@ -199,7 +200,7 @@
                             <label for="lessonGradesChoose" class="form-label">DərsSiniflər seçin</label>
 
                             <select class="js-example-basic-multiple w-100 lessonGradesChoose" style="width: 250px;" name="LessonGradeIds" multiple="multiple">
-                                @foreach (var lessonGrade in (ViewBag.LessonGrade as List<LessonGradeDto>)!)
+                                @foreach (var lessonGrade in Model.Data.LessonGrades)
                                 {
                                     <option value="@lessonGrade.Id"> @lessonGrade.Lesson  @lessonGrade.Grade</option>
                                 }
@@ -231,7 +232,7 @@
                             <label for="examDateChoose" class="form-label">İmtahan seçin</label>
                             <select class="js-example-basic-single w-100 examDateChoose" name="Id" id="examDateChoose">
                                <option value="0"> </option>
-                                @foreach (var exam in (ViewBag.Exams as List<ExamForSelectDto>)!)
+                                @foreach (var exam in Model.Data.Exams)
                                 {
                                     <option value="@exam.Id">@exam.ExamDate @exam.Lesson @exam.Grade</option>
                                 }
@@ -282,5 +283,64 @@
                 }
             });
         });
+
+        $('#lesson-form').submit(function(event) { 
+            event.preventDefault(); // Prevent default form submission
+            var form = $(this);
+
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        var errorHtml = '<ul>';
+                        $.each(response.errors, function(key, value) {
+                            errorHtml += '<li>' + value + '</li>';
+                        });
+                        errorHtml += '</ul>';
+                        $('#lesson-error').html(errorHtml).removeClass('d-none');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#lesson-error').html('An error occurred while processing your request.').removeClass('d-none');
+                }
+            });
+        });
+
+        $('#teacher-form').submit(function(event) { 
+            event.preventDefault(); // Prevent default form submission
+            var form = $(this);
+
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        var errorHtml = '<ul>';
+                        $.each(response.errors, function(key, value) {
+                            errorHtml += '<li>' + value + '</li>';
+                        });
+                        errorHtml += '</ul>';
+                        $('#teacher-error').html(errorHtml).removeClass('d-none');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr + ' / ' + status + ' / ' + error);
+                    $('#teacher-error').html('An error occurred while processing your request.').removeClass('d-none');
+                }
+            });
+        });
+        
+        
+        
+        
     });
+    
+
 </script>

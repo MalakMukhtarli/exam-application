@@ -7,6 +7,7 @@ using ExamApplication.Business.Services.Teachers;
 using ExamApplication.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 using ExamApplication.Mvc.Models;
+using ExamApplication.Mvc.ViewModels;
 
 namespace ExamApplication.Mvc.Controllers;
 
@@ -34,12 +35,17 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        ViewBag.Grades = await _gradeService.GetAllAsync();
-        ViewBag.LessonGrade = await _lessonGradeService.GetAllAsync();
-        ViewBag.Teachers = await _teacherService.GetAllAsync();
-        ViewBag.Exams = await _examService.GetAllForSelect();
-        
-        return View();
+        var result = new HomeViewModel
+        {
+            Data = new GetAllDataViewModel
+            {
+                Grades = await _gradeService.GetAllAsync(),
+                LessonGrades = await _lessonGradeService.GetAllAsync(),
+                Teachers = await _teacherService.GetAllAsync(),
+                Exams = await _examService.GetAllForSelect()
+            }
+        };
+        return View(result);
     }
 
     public IActionResult Privacy()

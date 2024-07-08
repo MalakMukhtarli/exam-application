@@ -1,5 +1,7 @@
+using ExamApplication.Business.Exceptions;
 using ExamApplication.Business.Models.Lessons;
 using ExamApplication.Business.Services.Lessons;
+using ExamApplication.Mvc.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExamApplication.Mvc.Controllers;
@@ -22,7 +24,13 @@ public class LessonController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(SaveLessonRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return Json(new { success = false, errors });
+        }
+
         await _lessonService.CreateAsync(request);
-        return RedirectToAction("Index", "Home");
+        return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
     }
 }

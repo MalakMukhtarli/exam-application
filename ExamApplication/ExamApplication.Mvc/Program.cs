@@ -1,4 +1,5 @@
 using ExamApplication.Business.Extensions;
+using ExamApplication.Mvc.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,12 @@ var config = builder.Configuration;
 services.InstallServicesInAssembly(config);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+    {
+        options.Filters.Add<ExceptionFilter>();
+        options.MaxModelBindingCollectionSize = int.MaxValue;
+    })
+    ;
 
 var app = builder.Build();
 

@@ -18,7 +18,6 @@ public class ExceptionFilter : ExceptionFilterAttribute
     {
         _dbContext = dbContext;
 
-        // Register known exception types and handlers.
         _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
         {
             {typeof(ValidationException), HandleValidationException},
