@@ -40,7 +40,7 @@ public class HomeController : Controller
             {
                 Grades = await _gradeService.GetAllAsync(),
                 LessonGrades = await _lessonGradeService.GetAllAsync(),
-                Teachers = await _teacherService.GetAllAsync(),
+                Teachers = await _teacherService.GetAllForSelectAsync(),
                 Exams = await _examService.GetAllForSelect()
             }
         };

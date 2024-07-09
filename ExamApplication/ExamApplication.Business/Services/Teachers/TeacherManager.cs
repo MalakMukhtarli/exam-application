@@ -28,7 +28,8 @@ public class TeacherManager : ITeacherService
 
     public async Task<List<TeacherDto>> GetAllAsync()
     {
-        var teachers = await _teacherRepository.GetQuery().Where(x => x.Active)
+        var teachers = await _teacherRepository.GetQuery()
+            .Where(x => x.Active)
             .Include(x => x.LessonGradeTeachers.Where(y => !y.Deleted))
             .ThenInclude(x => x.LessonGrade)
             .ThenInclude(x => x.Grade)
@@ -37,16 +38,33 @@ public class TeacherManager : ITeacherService
             .ThenInclude(x => x.Lesson)
             .Select(x => new TeacherDto
             {
+                Id = x.Id,
+                Name = x.Name,
+                Surname = x.Surname,
+                LessonGrades = x.LessonGradeTeachers
+                    .Where(y => !y.Deleted)
+                    .GroupBy(y => y.LessonGrade.Lesson)
+                    .Select(g => new LessonGradeForTeacher
+                    {
+                        Id = g.First().LessonGrade.Id,
+                        Lesson = g.Key.Name,
+                        Grades = g.Select(y => y.LessonGrade.Grade.Value).ToList()
+                    })
+                    .ToList()
+            })
+            .ToListAsync();
+
+        return teachers;
+    }
+
+    public async Task<List<TeacherDto>> GetAllForSelectAsync()
+    {
+        var teachers = await _teacherRepository.GetQuery().Where(x => x.Active)
+            .Select(x => new TeacherDto
+            {
                 Id = x.Id, 
                 Name = x.Name, 
                 Surname = x.Surname, 
-                LessonGrades = x.LessonGradeTeachers
-                    .Select(y => new LessonGradeDto
-                        { 
-                            Id = y.Id, 
-                            Lesson = y.LessonGrade.Lesson.Name, 
-                            Grade = y.LessonGrade.Grade.Value 
-                        }).ToList()
             })
             .ToListAsync();
 
@@ -118,12 +136,15 @@ public class TeacherManager : ITeacherService
                 Name = x.Name,
                 Surname = x.Surname,
                 LessonGrades = x.LessonGradeTeachers
-                    .Select(y => new LessonGradeDto
-                        { 
-                            Id = y.Id, 
-                            Lesson = y.LessonGrade.Lesson.Name, 
-                            Grade = y.LessonGrade.Grade.Value
-                        }).ToList()
+                    .Where(y => !y.Deleted)
+                    .GroupBy(y => y.LessonGrade.Lesson)
+                    .Select(g => new LessonGradeForTeacher
+                    {
+                        Id = g.First().LessonGrade.Id,
+                        Lesson = g.Key.Name,
+                        Grades = g.Select(y => y.LessonGrade.Grade.Value).ToList()
+                    })
+                    .ToList()
             })
             .FirstOrDefaultAsync();
 
