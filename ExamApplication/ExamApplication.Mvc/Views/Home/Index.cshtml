@@ -61,7 +61,7 @@
         <div class="accordion-body">
 
             <div class="container-fluid px-5 py-5">
-                <div id="teacher-error" class="alert alert-danger d-none">  </div>
+                <div id="teacher-error" class="alert alert-danger d-none"></div>
                 
                 <form id="teacher-form" method="post" asp-action="Create" asp-controller="Teacher">
                     <div class="row mb-5">
@@ -95,7 +95,8 @@
     <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
         <div class="accordion-body">
             <div class="container-fluid px-5 py-5">
-                <form method="post" asp-action="Create" asp-controller="Pupil">
+                <div id="pupil-error" class="alert alert-danger d-none"></div>
+                <form id="pupil-form" method="post" asp-action="Create" asp-controller="Pupil">
                     <div class="row mb-5">
                         <div class="mb-3 col-6">
                             <label for="pupilNumber" class="form-label">Şagirdin nömrəsi</label>
@@ -146,7 +147,8 @@
     <div id="flush-collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
         <div class="accordion-body">
             <div class="container-fluid px-5 py-5">
-                <form method="post" asp-action="Create" asp-controller="Exam">
+                <div id="exam-error" class="alert alert-danger d-none"></div>
+                <form id="exam-form" method="post" asp-action="Create" asp-controller="Exam">
                     <div class="row mb-5">
                         <div class="mb-3 col-2">
                             <label for="lessonChooseForExam" class="form-label">İmtahan olacaq dərsi və sinifi seçin</label>
@@ -182,7 +184,8 @@
     <div id="flush-collapseSeven" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
         <div class="accordion-body">
             <div class="container-fluid px-5 py-5">
-                <form method="post" asp-action="CreateLessonGrade" asp-controller="Teacher">
+                <div id="teacher-lesson-error" class="alert alert-danger d-none"></div>
+                <form id="teacher-lesson-form" method="post" asp-action="CreateLessonGrade" asp-controller="Teacher">
                     <div class="row mb-5">
                         <div class="mb-3 col-2">
                             <label for="teacherChoose" class="form-label">Müəllim seçin</label>
@@ -226,7 +229,8 @@
     <div id="flush-collapseEight" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
         <div class="accordion-body">
             <div class="container-fluid px-5 py-5">
-                <form method="post" asp-action="CreateMark" asp-controller="Exam">
+                <div id="exam-mark-error" class="alert alert-danger d-none"></div>
+                <form id="exam-mark-form" method="post" asp-action="CreateMark" asp-controller="Exam">
                     <div class="row mb-5">
                         <div class="mb-3 col-2">
                             <label for="examDateChoose" class="form-label">İmtahan seçin</label>
@@ -263,84 +267,24 @@
 </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/home.js" ></script>
 <script>
-    $(document).ready(function() {
-        $('#examDateChoose').change(function() {
-            var examId = $(this).val();
-            $.ajax({
-                url: '@Url.Action("GetAllPupilsByExamId", "Exam")',
-                type: 'GET',
-                data: { examId: examId },
-                success: function(data) {
-                    var $pupilSelect = $('#pupilChooseForExamResult');
-                    $pupilSelect.empty();
-                    $.each(data, function(i, pupil) {
-                        $pupilSelect.append('<option value="' + pupil.id + '">' + pupil.name + ' ' + pupil.surname + '</option>');
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                }
-            });
+    $('#examDateChoose').change(function() {
+        var examId = $(this).val();
+        $.ajax({
+            url: '@Url.Action("GetAllPupilsByExamId", "Exam")',
+            type: 'GET',
+            data: { examId: examId },
+            success: function(data) {
+                var $pupilSelect = $('#pupilChooseForExamResult');
+                $pupilSelect.empty();
+                $.each(data, function(i, pupil) {
+                    $pupilSelect.append('<option value="' + pupil.id + '">' + pupil.name + ' ' + pupil.surname + '</option>');
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
         });
-
-        $('#lesson-form').submit(function(event) { 
-            event.preventDefault(); // Prevent default form submission
-            var form = $(this);
-
-            $.ajax({
-                url: form.attr('action'),
-                type: form.attr('method'),
-                data: form.serialize(),
-                success: function(response) {
-                    if (response.success) {
-                        window.location.href = response.redirectUrl;
-                    } else {
-                        var errorHtml = '<ul>';
-                        $.each(response.errors, function(key, value) {
-                            errorHtml += '<li>' + value + '</li>';
-                        });
-                        errorHtml += '</ul>';
-                        $('#lesson-error').html(errorHtml).removeClass('d-none');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    $('#lesson-error').html('An error occurred while processing your request.').removeClass('d-none');
-                }
-            });
-        });
-
-        $('#teacher-form').submit(function(event) { 
-            event.preventDefault(); // Prevent default form submission
-            var form = $(this);
-
-            $.ajax({
-                url: form.attr('action'),
-                type: form.attr('method'),
-                data: form.serialize(),
-                success: function(response) {
-                    if (response.success) {
-                        window.location.href = response.redirectUrl;
-                    } else {
-                        var errorHtml = '<ul>';
-                        $.each(response.errors, function(key, value) {
-                            errorHtml += '<li>' + value + '</li>';
-                        });
-                        errorHtml += '</ul>';
-                        $('#teacher-error').html(errorHtml).removeClass('d-none');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log(xhr + ' / ' + status + ' / ' + error);
-                    $('#teacher-error').html('An error occurred while processing your request.').removeClass('d-none');
-                }
-            });
-        });
-        
-        
-        
-        
     });
-    
-
 </script>

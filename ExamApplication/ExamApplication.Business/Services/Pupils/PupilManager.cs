@@ -54,14 +54,14 @@ public class PupilManager : IPupilService
         if (isExist is not null)
             throw new DuplicateConflictException("Bu nömrəli şagird daha əvvəl yaradılıb");
 
-        await _gradeService.CheckByIdAsync(request.GradeId);
+        await _gradeService.CheckByIdAsync((int)request.GradeId!);
 
         var newPupil = new Pupil
         {
-            Number = request.Number,
-            Name = request.Name,
-            Surname = request.Surname,
-            PupilGrades = new List<PupilGrade> { new() { GradeId = request.GradeId } },
+            Number = (int)request.Number!,
+            Name = request.Name!,
+            Surname = request.Surname!,
+            PupilGrades = new List<PupilGrade> { new() { GradeId = (int)request.GradeId } },
             PupilExams = new List<PupilExam>()
         };
 

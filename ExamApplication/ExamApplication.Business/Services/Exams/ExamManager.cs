@@ -82,13 +82,13 @@ public class ExamManager : IExamService
         // await _gradeService.CheckByIdAsync(request.GradeId);
 
         // var lessonGrade = await _lessonService.CheckByGradeIdAsync(request.LessonId, request.GradeId);
-        var lessonGrade = await _lessonService.CheckByLessonGradeIdAsync(request.LessonGradeId);
+        var lessonGrade = await _lessonService.CheckByLessonGradeIdAsync((int)request.LessonGradeId!);
 
         var pupilGrades = await _pupilService.GetByGradeId(lessonGrade.GradeId);
 
         var exam = new Exam
         {
-            ExamDate = request.ExamDate,
+            ExamDate = (DateTime)request.ExamDate!,
             LessonGradeId = lessonGrade.Id,
             PupilExams = pupilGrades.Select(x => new PupilExam { PupilId = x.PupilId }).ToList()
         };
@@ -150,7 +150,7 @@ public class ExamManager : IExamService
 
         await _pupilExamRepository.UpdateAsync(pupilExam);
 
-        return request.PupilExamId;
+        return (int)request.PupilExamId!;
     }
 
     public async Task Delete(int examId)

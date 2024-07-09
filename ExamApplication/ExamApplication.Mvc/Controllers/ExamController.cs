@@ -23,15 +23,27 @@ public class ExamController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(SaveExamRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return Json(new { success = false, errors });
+        }
+        
         await _examService.Create(request);
-        return RedirectToAction("Index", "Home");
+        return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateMark(UpdatePupilExamRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return Json(new { success = false, errors });
+        }
+        
         await _examService.UpdatePupilExam(request);
-        return RedirectToAction("Index", "Home");
+        return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
     }
 
     [HttpGet]

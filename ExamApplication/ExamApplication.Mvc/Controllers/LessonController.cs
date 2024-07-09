@@ -1,7 +1,5 @@
-using ExamApplication.Business.Exceptions;
 using ExamApplication.Business.Models.Lessons;
 using ExamApplication.Business.Services.Lessons;
-using ExamApplication.Mvc.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExamApplication.Mvc.Controllers;

@@ -4,7 +4,6 @@ using ExamApplication.Business.Services.Grades;
 using ExamApplication.Business.Services.LessonGrades;
 using ExamApplication.Business.Services.Pupils;
 using ExamApplication.Business.Services.Teachers;
-using ExamApplication.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 using ExamApplication.Mvc.Models;
 using ExamApplication.Mvc.ViewModels;

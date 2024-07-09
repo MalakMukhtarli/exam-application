@@ -16,21 +16,32 @@ public class TeacherController : Controller
     public async Task<IActionResult> Index()
     {
         var response = await _teacherService.GetAllAsync();
-        
         return View(response);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(SaveTeacherRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return Json(new { success = false, errors });
+        }
+        
         await _teacherService.CreateAsync(request);
-        return RedirectToAction("Index", "Home");
+        return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateLessonGrade(int teacherId, SaveLessonGradeTeacherRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return Json(new { success = false, errors });
+        }
+        
         await _teacherService.CreateLessonGradeTeacherAsync(teacherId, request);
-        return RedirectToAction("Index", "Home");
+        return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
     }
 }
