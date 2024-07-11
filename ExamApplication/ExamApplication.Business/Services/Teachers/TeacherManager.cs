@@ -32,29 +32,31 @@ public class TeacherManager : ITeacherService
             .Where(x => x.Active)
             .Include(x => x.LessonGradeTeachers.Where(y => !y.Deleted))
             .ThenInclude(x => x.LessonGrade)
-            .ThenInclude(x => x.Grade)
+            .ThenInclude(lg => lg.Lesson)
             .Include(x => x.LessonGradeTeachers.Where(y => !y.Deleted))
             .ThenInclude(x => x.LessonGrade)
-            .ThenInclude(x => x.Lesson)
-            .Select(x => new TeacherDto
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Surname = x.Surname,
-                LessonGrades = x.LessonGradeTeachers
-                    .Where(y => !y.Deleted)
-                    .GroupBy(y => y.LessonGrade.Lesson)
-                    .Select(g => new LessonGradeForTeacher
-                    {
-                        Id = g.First().LessonGrade.Id,
-                        Lesson = g.Key.Name,
-                        Grades = g.Select(y => y.LessonGrade.Grade.Value).ToList()
-                    })
-                    .ToList()
-            })
-            .ToListAsync();
+            .ThenInclude(lg => lg.Grade).ToListAsync();
+        
+            var teacherDtos = teachers
+                .Select(x => new TeacherDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Surname = x.Surname,
+                    LessonGrades = x.LessonGradeTeachers
+                        .Where(y => !y.Deleted)
+                        .GroupBy(y => y.LessonGrade.Lesson)
+                        .Select(g => new LessonGradeForTeacher
+                        {
+                            Id = g.First().LessonGrade.Id,
+                            Lesson = g.Key.Name,
+                            Grades = g.Select(y => y.LessonGrade.Grade.Value).ToList()
+                        })
+                        .ToList()
+                })
+                .ToList();
 
-        return teachers;
+        return teacherDtos;
     }
 
     public async Task<List<TeacherDto>> GetAllForSelectAsync()
