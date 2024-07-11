@@ -19,22 +19,6 @@
             </tr>
             </thead>
             <tbody>
-            @* @foreach (var teacher in Model) *@
-            @* { *@
-            @* <tr> *@
-            @*     <th scope="row">@(++i)</th> *@
-            @*     <td class="align-items-center"><div>@teacher.Name @teacher.Surname</div></td> *@
-            @*     <td colspan="2"> *@
-            @*         @foreach (var lessonGroup in teacher.LessonGrades.GroupBy(lg => lg.Lesson)) *@
-            @*         { *@
-            @*         <div class="d-flex"> *@
-            @*             <div style="width: 150px;">@lessonGroup.Key</div> *@
-            @*             <div>@string.Join(", ", lessonGroup.Select(lg => lg.Grades))</div> *@
-            @*         </div> *@
-            @*         } *@
-            @*     </td> *@
-            @* </tr> *@
-            @* } *@
             @foreach (var teacher in Model)
             {
                 <tr>
